@@ -1,115 +1,59 @@
-#include <iostream>
 #include <vector>
-#include <tuple>
+#include <iostream>
 #include <fstream>
+#include <tuple>
+#include <string>
 #include <sstream>
-#include <functional>
-#include <unordered_map>
 
 using namespace std;
 
-namespace std {
-    template <>
-    struct hash<tuple<int, int>> {
-        size_t operator()(const tuple<int, int>& t) const {
-            auto h1 = hash<int>{}(get<0>(t));
-            auto h2 = hash<int>{}(get<1>(t));
-            return h1 ^ (h2 << 1); // Combina os hashes
-        }
-    };
-}
-vector<tuple<int, int>> verificarFeatures(const unordered_map<tuple<int, int>, vector<tuple<int, int>>> &features_map, const tuple<int, int> &elemento) {
-    auto aux = features_map.find(elemento);
-    if (aux != features_map.end()) {
-        return aux->second;
-    }
-    return {}; 
-}
+//tuple {coluna, numero}
 
-void print(const tuple<int,int> elementos){
-    cout<<"{"<< to_string(get<0>(elementos))<<","<<to_string(get<1>(elementos))<<"},";
-}
-
-void classe( vector<vector<tuple<int,int>>> *list_classes, const vector<vector<tuple<int,int>>> &list_elementos){
-
-    int idx_classe;
-
-    for( auto i : list_elementos){
-        idx_classe = get<1>(i.back());
-        i.pop_back();
-
-        list_classes[idx_classe].push_back(i);
-    }
-
-        for( auto i : list_elementos){
-        idx_classe = get<1>(i.back());
-        i.pop_back();
-
-        list_classes[idx_classe].push_back(i);
-    }
-
-
-    int linha = 0;
-    for( auto i: *list_classes->begin()){
-        cout<<"linha"<<to_string(linha)<<endl;
-        for( auto &j: i->begin()){
-            for( auto &k : j){
-
-            }
-        }
-    }
- 
+void print(const tuple<int,int> &elemento){
+    cout<<"{"<<to_string(get<0>(elemento))<<","<<to_string(get<1>(elemento))<<"},";
 }
 
 
 
-//tuple (coluna, valor)
-vector<vector<tuple<int,int>>> readCSV(const string& endereco_arquivo) {
-    vector<tuple<int,int>> elementos;
-    vector<vector<tuple<int,int>>> list_elementos;
+void readCSV(const string &nome_endereco){
+    vector<vector<vector<tuple<int,int>>>> classes;
+    
 
-    vector<tuple<int, int>> features;
-
-    int tamanho = 0;
-
-    ifstream arquivo(endereco_arquivo);
-    if (!arquivo) {
-        cerr << "Não foi possível abrir o arquivo do endereço: " << endereco_arquivo << endl;
+    ifstream file(nome_endereco);
+    if(!file){
+        cerr<<"Erro ao abrir o arquivo"<<endl;
         exit(1);
     }
 
     string linha;
-    while (getline(arquivo, linha)) {
+    while(getline(file,linha)){
+        vector<tuple<int,int>> lista_elementos;
 
-        stringstream ss(linha);
+        stringstream aux_linha(linha);
         string valor;
-        int numero_coluna = 1;
+        int coluna = 1;
 
-
-        while (getline(ss, valor, ',')) {
-            tuple<int,int> elemento(numero_coluna++,stoi(valor));
-            elementos.push_back(elemento);
+        while(getline(aux_linha, valor, ',')){
+            tuple<int,int> elemento(coluna++, stoi(valor));
+            lista_elementos.push_back(elemento);
         }
-        elementos.clear();
-        tamanho++;
+
+        int numero_classe = get<1>(lista_elementos.back());
+        lista_elementos.pop_back();
+
+        classes[numero_classe].push_back(lista_elementos);
+
+
+
+
+        lista_elementos.clear();
     }
-    arquivo.close();
 
-
-    vector<vector<tuple<int,int>>> list_classes(tamanho);
-    unordered_map<tuple<int, int>, vector<vector<tuple<int,int>>>> features_map;
-
-
-    classe(&list_classes, list_elementos);
-
-    return {{{}}}; 
 }
 
 
 
-
-
-int main() {
-    readCSV("dataset/teste.data");
+int main(){
+    readCSV("dataset/teste2.data");
     return 0;
 }
