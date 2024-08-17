@@ -13,7 +13,8 @@ using namespace std;
 class CSV{
 public:
     CSV();
-    void readCSV(const string &nome_endereco);
+    void print(const tuple<int,int> &elemento);
+    void readCSV(const string &nome_endereco, vector<vector<tuple<int,int>>>* dados_geral, vector<tuple<int,int>> *features,     vector<vector<int>> *classes);
 };
 
 #endif
