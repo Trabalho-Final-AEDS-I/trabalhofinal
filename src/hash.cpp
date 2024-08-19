@@ -5,51 +5,58 @@ using namespace std;
 void combinations(vector<vector<tuple<int, int>>>* dados_geral, map<tuple<int, int>, vector<int>>* features, vector<tuple<int, int>> lista_elementos, vector<vector<int>>* classes) {
     map<vector<tuple<int, int>>, double> suportes;
     int n = lista_elementos.size();
-    //unsigned long int total_linhas = dados_geral->size();
-    unsigned long int total_combinacoes = 1 << n;// Existem 2^n combinações possíveis
-    
-    vector<vector<int>>fase(*classes);
-    fase.clear();
-    vector<vector<tuple<int, int>>>data(*dados_geral);
-    data.clear();
+    unsigned long int total_combinacoes = 1 << n; // Existem 2^n combinações possíveis
 
+    vector<vector<int>> fase(*classes);
+    fase.clear();
+    vector<vector<tuple<int, int>>> data(*dados_geral);
+    data.clear();
 
     for (long unsigned int i = 1; i < total_combinacoes; ++i) {
         vector<tuple<int, int>> combinacao_atual;
         vector<int> linhas;
         bool primeiro_elemento = true;
-        
-        // Etapa 2  - 1
+
+        // Etapa 2 - 1
         for (int j = 0; j < n; ++j) {
             if (i & (1 << j)) { // Se o j-ésimo bit estiver setado, inclui o elemento na combinação
                 combinacao_atual.push_back(lista_elementos[j]);
-                if (features->find(lista_elementos[j]) != features->end()) {
+                                
+                if((*features)[lista_elementos[j]].empty()){
+                    linhas = { };
+                    primeiro_elemento = false;
+                }
+                else if (features->find(lista_elementos[j]) != features->end()) {
                     if (primeiro_elemento) {
                         linhas = (*features)[lista_elementos[j]];
                         primeiro_elemento = false;
-                    } else {
+                    } 
+                    else {
                         // Interseção de linhas
                         vector<int> intersect;
                         set_intersection(linhas.begin(), linhas.end(), (*features)[lista_elementos[j]].begin(), (*features)[lista_elementos[j]].end(), back_inserter(intersect));
                         linhas = intersect;
+                        
+                        if(linhas.empty()){
+                            break;
+                        }
                     }
                 }
+            
             }
         }
-
-
-        cout<<"Combinação: ";
-        for(auto &p: combinacao_atual){
-            cout<<"{"<<to_string(get<0>(p))<<","<<to_string(get<1>(p))<<"},";
+        
+        cout << "Combinação: ";
+        for (auto &p : combinacao_atual) {
+            cout << "{" << to_string(get<0>(p)) << "," << to_string(get<1>(p)) << "},";
         }
-        cout<<   " -> ";
-        for(auto &p: linhas){
-            cout<<to_string(p)<<",";
+        cout << " -> "<<to_string(linhas.size())<<" ->" << endl;
+        for (auto &p : linhas) {
+            cout << to_string(p) << ",";
         }
-        cout<<endl;
+        cout << endl;
+        linhas.clear();
     }
-
-   
 }
 
 

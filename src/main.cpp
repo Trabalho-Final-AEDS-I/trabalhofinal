@@ -2,7 +2,7 @@
 
 int main(){
     Hash hash;
-    const string input_endereco = "dataset/teste2.data";
+    const string input_endereco = "dataset/poker-hand-training.data";
     const string output_endereco = "dataset/testeout.data";
 
     vector<vector<tuple<int,int>>> dados_geral;
@@ -12,7 +12,7 @@ int main(){
 
 
     hash.train(input_endereco,&dados_geral,&features,&classes);
-
+/*
     cout<<"Features:\n";
     for(auto &i: features){
         cout<<"{"<<to_string(get<0>(i.first))<<","<<to_string(get<1>(i.first))<<"}: ";
@@ -32,6 +32,7 @@ int main(){
         }
         cout<<endl;
     }
+*/
     hash.test(output_endereco,&dados_geral,&features,&classes);
     
     return 0;
