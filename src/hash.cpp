@@ -38,12 +38,11 @@ void combinations(vector<vector<tuple<int, int>>>* dados_geral, map<tuple<int, i
         }
 
 
-
         cout<<"Combinação: ";
         for(auto &p: combinacao_atual){
             cout<<"{"<<to_string(get<0>(p))<<","<<to_string(get<1>(p))<<"},";
         }
-        cout<<   "     linha: ";
+        cout<<   " -> ";
         for(auto &p: linhas){
             cout<<to_string(p)<<",";
         }
