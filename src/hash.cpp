@@ -3,18 +3,23 @@
 using namespace std;
 
 void combinations(vector<vector<tuple<int, int>>>* dados_geral, map<tuple<int, int>, vector<int>>* features, vector<tuple<int, int>> lista_elementos, vector<vector<int>>* classes) {
-    int totalLinhas = dados_geral->size();
     map<vector<tuple<int, int>>, double> suportes;
-
     int n = lista_elementos.size();
-    // Existem 2^n combinações possíveis
-    int total_combinacoes = 1 << n;
+    //unsigned long int total_linhas = dados_geral->size();
+    unsigned long int total_combinacoes = 1 << n;// Existem 2^n combinações possíveis
+    
+    vector<vector<int>>fase(*classes);
+    fase.clear();
+    vector<vector<tuple<int, int>>>data(*dados_geral);
+    data.clear();
 
-    for (int i = 1; i < total_combinacoes; ++i) {
+
+    for (long unsigned int i = 1; i < total_combinacoes; ++i) {
         vector<tuple<int, int>> combinacao_atual;
         vector<int> linhas;
         bool primeiro_elemento = true;
-
+        
+        // Etapa 2  - 1
         for (int j = 0; j < n; ++j) {
             if (i & (1 << j)) { // Se o j-ésimo bit estiver setado, inclui o elemento na combinação
                 combinacao_atual.push_back(lista_elementos[j]);
@@ -32,46 +37,20 @@ void combinations(vector<vector<tuple<int, int>>>* dados_geral, map<tuple<int, i
             }
         }
 
-        if (!linhas.empty()) {
-            // Calcular confiança para cada classe
-            map<int, int> contagemClasses;
-            for (int linha : linhas) {
-                for (long unsigned int c = 0; c < classes->size(); ++c) {
-                    if (find((*classes)[c].begin(), (*classes)[c].end(), linha) != (*classes)[c].end()) {
-                        contagemClasses[c]++;
-                    }
-                }
-            }
 
-            // Armazenar o suporte
-            for (const auto& [classe, contagem] : contagemClasses) {
-                double confianca = static_cast<double>(contagem) / linhas.size();
-                if (confianca > 0) {
-                    double suporte = confianca / totalLinhas;
-                    suportes[combinacao_atual] += suporte;
-                }
-            }
+
+        cout<<"Combinação: ";
+        for(auto &p: combinacao_atual){
+            cout<<"{"<<to_string(get<0>(p))<<","<<to_string(get<1>(p))<<"},";
         }
+        cout<<   "     linha: ";
+        for(auto &p: linhas){
+            cout<<to_string(p)<<",";
+        }
+        cout<<endl;
     }
 
-    // Determinar a classe final com o maior suporte
-    auto max_suporte = max_element(suportes.begin(), suportes.end(), [](const auto& a, const auto& b) {
-        return a.second < b.second;
-    });
-
-    if (max_suporte != suportes.end()) {
-        cout << "A classe final determinada é: " << get<1>(max_suporte->first[0]) << endl;
-        cout << "Suportes calculados:" << endl;
-        for (const auto& suporte : suportes) {
-            cout << "Combinação: ";
-            for (const auto& elem : suporte.first) {
-                cout << "{" << get<0>(elem) << "," << get<1>(elem) << "}, ";
-            }
-            cout << "Suporte: " << suporte.second << endl;
-        }
-    } else {
-        cout << "Nenhuma combinação com suporte suficiente encontrada." << endl;
-    }
+   
 }
 
 
@@ -154,10 +133,11 @@ void Hash::test(const string &nome_endereco, vector<vector<tuple<int,int>>>* dad
             numero_coluna++;
         }
 
+        lista_elementos.pop_back();
         combinations(dados_geral, features, lista_elementos, classes);
 
     }
-    
+    file.close();
 }
 
 

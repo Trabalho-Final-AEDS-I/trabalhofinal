@@ -2,7 +2,7 @@
 
 int main(){
     Hash hash;
-    const string input_endereco = "dataset/teste.data";
+    const string input_endereco = "dataset/teste2.data";
     const string output_endereco = "dataset/testeout.data";
 
     vector<vector<tuple<int,int>>> dados_geral;
