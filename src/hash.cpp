@@ -23,8 +23,9 @@ void combinations(vector<vector<tuple<int, int>>>* dados_geral, map<tuple<int, i
                 combinacao_atual.push_back(lista_elementos[j]);
                                 
                 if((*features)[lista_elementos[j]].empty()){
-                    linhas = { };
-                    primeiro_elemento = false;
+                    linhas.clear();
+                    //primeiro_elemento = false;
+                    break;
                 }
                 else if (features->find(lista_elementos[j]) != features->end()) {
                     if (primeiro_elemento) {
@@ -36,7 +37,7 @@ void combinations(vector<vector<tuple<int, int>>>* dados_geral, map<tuple<int, i
                         vector<int> intersect;
                         set_intersection(linhas.begin(), linhas.end(), (*features)[lista_elementos[j]].begin(), (*features)[lista_elementos[j]].end(), back_inserter(intersect));
                         linhas = intersect;
-                        
+
                         if(linhas.empty()){
                             break;
                         }
@@ -46,16 +47,18 @@ void combinations(vector<vector<tuple<int, int>>>* dados_geral, map<tuple<int, i
             }
         }
         
-        cout << "Combinação: ";
-        for (auto &p : combinacao_atual) {
-            cout << "{" << to_string(get<0>(p)) << "," << to_string(get<1>(p)) << "},";
+        if(!linhas.empty()){
+            cout << "Combinação: ";
+            for (auto &p : combinacao_atual) {
+                cout << "{" << to_string(get<0>(p)) << "," << to_string(get<1>(p)) << "},";
+            }
+            cout << " -> "<<to_string(linhas.size())<<" ->" << endl;
+            for (auto &p : linhas) {
+                cout << to_string(p) << ",";
+            }
+            cout << endl;
+            linhas.clear();
         }
-        cout << " -> "<<to_string(linhas.size())<<" ->" << endl;
-        for (auto &p : linhas) {
-            cout << to_string(p) << ",";
-        }
-        cout << endl;
-        linhas.clear();
     }
 }
 
