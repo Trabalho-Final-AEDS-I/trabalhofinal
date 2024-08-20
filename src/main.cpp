@@ -1,39 +1,26 @@
-#include "hash.hpp"
+#include "treinamento.hpp"
+#include <iostream>
+#include <chrono>
 
-int main(){
-    Hash hash;
-    const string input_endereco = "dataset/poker-hand-training.data";
-    const string output_endereco = "dataset/testeout.data";
+string file_input = "dataset/poker-hand-training.data";
+//string file_input = "dataset/teste2.data";
+string file_output = "dataset/poker-hand-testing.data";
 
-    vector<vector<tuple<int,int>>> dados_geral;
-    map<tuple<int,int>,vector<int>> features;
 
+
+int main() {
+    chrono::time_point<chrono::system_clock> start = chrono::system_clock::now();
     vector<vector<int>> classes;
+    map<tuple<int,int>,vector<int>> features;
+    vector<vector<tuple<int,int>>> data;
+
+    Treinamento treinamento;
+    treinamento.processando(file_output, &data, &classes, &features);
+    //treinamento.printarValores(classes, features);
 
 
-    hash.train(input_endereco,&dados_geral,&features,&classes);
-/*
-    cout<<"Features:\n";
-    for(auto &i: features){
-        cout<<"{"<<to_string(get<0>(i.first))<<","<<to_string(get<1>(i.first))<<"}: ";
-        for(auto &j: i.second){
-            cout<<to_string(j)<<", ";
-        }
-        cout<<endl; 
-    }
-
-    cout<<endl;
-    cout<<"Classes:\n";
-    int m = 0;
-    for(auto &i : classes){
-        cout<<to_string(m++)<<": ";
-        for(auto &j: i){
-            cout<<to_string(j)<<", ";
-        }
-        cout<<endl;
-    }
-*/
-    hash.test(output_endereco,&dados_geral,&features,&classes);
-    
+    chrono::time_point<chrono::system_clock> end = chrono::system_clock::now();
+    chrono::duration<double> elapsed_seconds = end - start;
+    cout << "Tempo de execução: " << elapsed_seconds.count() << "s" << endl;
     return 0;
 }
