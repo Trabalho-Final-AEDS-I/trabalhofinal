@@ -11,8 +11,7 @@ using namespace std;
 class Treinamento {
     public:
         Treinamento();
-        void processando(const string &filename , vector<vector<tuple<int,int>>>* data, vector<vector<int>>* classes, map<tuple<int,int>,vector<int>> *features);
-
+        void processando(const string &filename, vector<vector<int>>* classes, map<tuple<int,int>,vector<int>> *features);
         void printarValores(vector<vector<int>> classes, map<tuple<int,int>,vector<int>> features) const;
 };
 
