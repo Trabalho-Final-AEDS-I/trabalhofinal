@@ -25,22 +25,25 @@ void Treinamento::processando(const string &filename, vector<vector<int>> *class
         while(getline(ss, valor, ',')){
             if (ss.peek() == EOF) {
                 numero_classe = stoi(valor);
-                break;
-            }
-            tuple<int, int> elemento(chave++, stoi(valor));
-            (*features)[elemento].push_back(row);
-        }
+                if (numero_classe >= static_cast<int>(classes->size())) {
+                    classes->resize(numero_classe + 1);
+                }
 
-        if (numero_classe >= static_cast<int>(classes->size())) {
-            classes->resize(numero_classe + 1);
+                (*classes)[numero_classe].push_back(row);
+            }
+            else{
+                tuple<int, int> elemento(chave++, stoi(valor));
+                (*features)[elemento].push_back(row);
+            }
         }
-        (*classes)[numero_classe].push_back(row);
 
         row ++;
     }
 
     file.close();
 }
+
+
 
 
 

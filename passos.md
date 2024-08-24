@@ -1,21 +1,2 @@
-vetor  = taanho 4{4,5,2,7}
-  
-1<<4 16
-
-           1111  = 15  
-
-        0010  & 1<<0       j = 0 
-        0010  &  0001
-        0011  = 1
-
-        0001  & 1<<1       j = 1
-        0001  & 0010 
-        0011  = 1, 2, 1 e 2,   4 , 5, 4 i 5
-
-        0001  & 1<<2       j = 2
-        0001  & 0100 
-        0101  = 4, 2, 4 e 2
-
-        0001  & 1<<3       j = 3
-        0001  & 1000 
-        1001  = 4, 7, 4 e 7
+pegar a linha é ver se é 70% igual a um elemento no cache hash, se for, pegar as combinações presente 
+                                                     se não, colocar a linha no cache e fazer as combinações

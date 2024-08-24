@@ -7,8 +7,7 @@
 #include <map>
 
 #define COMBINATION_MAX_LINE (1 << 10)
-
-#define MAX_LINE 100000
+#define MAX_LINE 1000
 
 using namespace std;
 

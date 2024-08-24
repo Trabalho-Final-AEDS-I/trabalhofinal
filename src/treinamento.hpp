@@ -12,7 +12,6 @@ class Treinamento {
     public:
         Treinamento();
         void processando(const string &filename, vector<vector<int>>* classes, map<tuple<int,int>,vector<int>> *features);
-        void printarValores(vector<vector<int>> classes, map<tuple<int,int>,vector<int>> features) const;
 };
 
 #endif
