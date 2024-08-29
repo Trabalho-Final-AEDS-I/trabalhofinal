@@ -36,7 +36,6 @@ void Treinamento::processando(const string &filename, vector<vector<int>> *class
                 (*features)[elemento].push_back(row);
             }
         }
-
         row ++;
     }
 
