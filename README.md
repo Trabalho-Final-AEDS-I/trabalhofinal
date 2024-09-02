@@ -20,7 +20,7 @@
   * [testando](#testando)
   * [processando](#processando)
 * [Conclusão](#conclusão)
-
+* [Contatos](#contatos)
 
 
 ## Trabalho
@@ -29,7 +29,7 @@ Este trabalho foi proposto na disciplina de Algoritmos e Estruturas de Dados pel
 Na fase de treinamento é lido somente o primeiro arquivo [poker-hand-training.data](dataset/poker-hand-training.data) que contém os elementos das linhas e sua classe. Dessa forma para primeira parte é guardado em um vetor as classes e são montadas as Tuplas <coluna, elemento> que são guardadas em map<tuple<int,int> para depois ser acessado
 ### Teste 
 
-## Tabela Hash 
+## Tabela Hash
 
 ## LAC
 
@@ -60,7 +60,21 @@ bool lsh(map<double, int>* map_lsh,
     }
 }
 ```
-## calcularSuporte 
+Propósito: Essa função verifica se a similaridade de Jaccard entre dois conjuntos é suficiente para associar um determinado item a uma classe conhecida. Se a similaridade for acima de um determinado limiar e a classe correspondente for encontrada em um mapa, a função retorna true e define numero_classe para a classe correspondente.
+
+Parâmetros:
+- map_lsh: Mapa que relaciona a similaridade de Jaccard a classes.
+- a, b: Dois vetores de tuplas representando as características dos elementos que estão sendo comparados.
+- numero_classe: Ponteiro para um inteiro onde será armazenada a classe correspondente, se encontrada.
+- jaccard: Ponteiro para um valor double onde será armazenada a similaridade de Jaccard calculada.
+
+Funcionamento:
+- Calcula a união e a interseção dos conjuntos a e b.
+- Calcula a similaridade de Jaccard entre a e b.
+- Se a similaridade for maior que 0,1 e a similaridade existir no map_lsh, a função atribui numero_classe com a classe correspondente e retorna true.
+
+
+## CalcularSuporte 
 ```Markdown
 void calcularSuporte(
     vector<int>combinacoes, 
@@ -91,7 +105,20 @@ void calcularSuporte(
         }
 }
 ```
-## classificação 
+Propósito: Essa função calcula o suporte de um conjunto de combinações de elementos, comparando-o com classes existentes.
+
+Parâmetros:
+- combinacoes: Vetor de inteiros representando combinações de elementos.
+- classes: Vetor de vetores de inteiros que representam as classes.
+- features_size: Tamanho das características.
+- result: Mapa onde os resultados dos cálculos de suporte são armazenados.
+
+Funcionamento:
+- Para cada classe, calcula a interseção entre as combinações e os elementos da classe.
+- Se a interseção não for vazia, calcula o suporte (a confiança) e adiciona ao resultado.
+
+
+## Classificação 
 ```Markdown
 int classificacao(map<tuple<int, int>, vector<int>> features, 
                   vector<vector<int>> map_classes, 
@@ -168,8 +195,26 @@ int classificacao(map<tuple<int, int>, vector<int>> features,
         }
     }
 ```
+Propósito: Essa função realiza a classificação de um conjunto de características com base nas interseções dessas características com um conjunto de classes conhecidas. O objetivo é encontrar a classe que melhor corresponde às características dadas.
 
-## testando 
+Parâmetros:
+
+- features: Mapa que mapeia tuplas de características a vetores de inteiros.
+- map_classes: Vetor de vetores que representam as classes.
+- cache: Mapa que armazena combinações previamente calculadas para otimizar futuras operações.
+- features_size: Tamanho das características.
+- lista_elementos: Vetor de tuplas que representam os elementos a serem classificados.
+
+Funcionamento:
+
+- Gera todas as combinações possíveis dos elementos em lista_elementos.
+- Para cada combinação, calcula a interseção com os vetores de características e armazena no cache para otimizar futuras consultas.
+- Calcula o suporte de cada combinação e armazena no mapa result.
+- Ordena os resultados pelo suporte e retorna a classe que tem o maior suporte.
+
+
+
+## Testando 
 ```Markdown
 void Teste::testando(const string &filename_input, const string &filename_output, 
                      vector<vector<int>>* map_classes, 
@@ -258,7 +303,22 @@ void Teste::testando(const string &filename_input, const string &filename_output
     file_input.close();
 }
 ```
-## processando 
+### Classe Teste e Método testando
+
+Propósito: A classe Teste contém métodos para realizar o teste do modelo de classificação. O método testando processa um arquivo de entrada, classifica cada linha de dados e salva os resultados em um arquivo de saída.
+
+Funcionamento:
+
+- Leitura de Arquivos: Abre o arquivo de entrada (filename_input) e cria o arquivo de saída (filename_output).
+- Inicialização: Cria uma assinatura baseada nas características fornecidas.
+- Para cada linha do arquivo de entrada, extrai as características e a classe real.
+- Calcula a similaridade de Jaccard usando a função lsh para determinar se a classe pode ser identificada com base nessa métrica.
+- Se não puder ser identificada com lsh, a função classificacao é chamada para determinar a classe usando o método de combinação de interseções.
+- Calcula a acurácia e a perda comparando a classe prevista com a classe real.
+- Escreve os resultados no arquivo de saída.
+
+
+## Processando 
 ```Markdown
 void Treinamento::processando(const string &filename, vector<vector<int>> *classes, map<tuple<int,int>,vector<int>> *features){
 
@@ -296,8 +356,46 @@ void Treinamento::processando(const string &filename, vector<vector<int>> *class
     file.close();
 }
 ```
-## Conclusão 
+A função *Treinamento::processando* é responsável por processar um arquivo de entrada que contém dados para o treinamento de um modelo. Ela lê os dados do arquivo, organiza-os em classes e características, e os armazena em estruturas apropriadas para serem usados posteriormente no treinamento ou em previsões.
 
+Parâmetros:
+- filename: O nome do arquivo que contém os dados de entrada para o treinamento.
+- classes: Um ponteiro para um vetor de vetores de inteiros. Cada vetor interno representa uma classe e armazena os números das linhas que pertencem a essa classe.
+- features: Um ponteiro para um mapa que mapeia tuplas de inteiros (características) para vetores de inteiros. Cada vetor armazena os números das linhas em que a característica aparece.
+
+### Funcionamento 
+
+1. Abertura do Arquivo:
+    - A função tenta abrir o arquivo especificado pelo nome filename usando um objeto ifstream.
+    - Se o arquivo não puder ser aberto, uma mensagem de erro é exibida e o programa é encerrado.
+
+2. Leitura Linha por Linha:
+    - A função lê o arquivo linha por linha usando getline.
+    - Cada linha representa uma instância de dados (um conjunto de características seguido por uma classe).
+
+3. Processamento de Cada Linha:
+    - A linha é dividida em valores separados por vírgulas usando um stringstream.
+    - chave é inicializada em 1 e é usada para criar tuplas de características.
+
+4. Classificação e Características:
+    1. Classe:
+        - O último valor em cada linha é a classe (numero_classe).
+        - Se o número da classe (numero_classe) for maior ou igual ao tamanho atual do vetor classes, o vetor é redimensionado para acomodar essa nova classe.
+        - O número da linha (row) é então adicionado ao vetor correspondente à classe em classes.
+    2. Características:
+        - Todos os valores anteriores ao último na linha são características.
+        - Para cada característica, uma tupla é criada usando a chave e o valor da característica.
+        - Essa tupla é usada como chave no mapa features, e o número da linha é adicionado ao vetor correspondente no mapa.
+
+5. Incremento de Linha:
+    - O número da linha (row) é incrementado a cada iteração do loop principal para acompanhar a linha atual que está sendo processada.
+
+6. Fechamento do Arquivo:
+    - O arquivo é fechado após o término do processamento.
+
+
+## Conclusão 
+No processo de construção do projeto realizado, notou-se que a implementação de uma tabela hash para busca de dados foi primordial para a diminuição do tempo de execução
 ## Compilação :hammer_and_wrench:
 Para executar o programa foi utilizado um arquivo Makefile que realiza o processo de compilação e execução. Arquivo o qual requer as seguintes diretrizes de execução:
 
@@ -308,7 +406,17 @@ Para executar o programa foi utilizado um arquivo Makefile que realiza o process
 |  `make run`            | Executa o programa da pasta build após a realização da compilação                                     |
 
 
-## Contatos :e-mail:
+## Contatos
+<div align="center"> 
+    
+| Participante           |  Contato  |                     
+| -----------------------| ----------|
+|  Anderson Rodrigues Dos Santos | andersonifnmg.info@gmail.com :email: |
+|  Elcio Costa Amorim Neto | elcioamorim12@gmail.com :email: |
+|  Humberto Henrique Lima Cunha | humberto17henrique@gmail.com  :email: |
+|  Kaua Lucas De Jesus Silva | kaualucas396@gmail.com :email: |
+|  Sergio Henrique Quedas Ramos | sergiohenriquequedasramos@gmail.com :email: |  
 
+</div>
 
 
