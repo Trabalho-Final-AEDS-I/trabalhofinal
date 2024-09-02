@@ -15,10 +15,10 @@
 * [LAC](#lac)
 * [Implementação](#implementação)
   * [LSH](#lsh)
-  * [calcularSuporte](#calcularsuporte)
-  * [classificação](#classificação)
-  * [testando](#testando)
-  * [processando](#processando)
+  * [CalcularSuporte](#calcularsuporte)
+  * [Classificação](#classificação)
+  * [Testando](#testando)
+  * [Processando](#processando)
 * [Conclusão](#conclusão)
 * [Contatos](#contatos)
 
@@ -26,15 +26,23 @@
 ## Trabalho
 Este trabalho foi proposto na disciplina de Algoritmos e Estruturas de Dados pelo professor Michel Pires da Silva do Centro Federal de Educação Tecnológica de Minas Gerais [GitHub](https://github.com/mpiress). O presente trabalho propõe a criação de um algoritmo de classificação, utilizando estruturas de dados e uma abordagem focada na utilização do algoritmo Lazy Associative Classification (LAC). O objetivo deste trabalho é desenvolver uma solução que seja eficiente e adequada às necessidades de um sistema de classificação em tempo real. Desenvolvendo nossa capacidade de implementação de tabelas hash e 
 ### Treinamento 
-Na fase de treinamento é lido somente o primeiro arquivo [poker-hand-training.data](dataset/poker-hand-training.data) que contém os elementos das linhas e sua classe. Dessa forma para primeira parte é guardado em um vetor as classes e são montadas as Tuplas <coluna, elemento> que são guardadas em map<tuple<int,int> para depois ser acessado
+Na fase de treinamento é lido somente o primeiro arquivo [poker-hand-training.data](dataset/poker-hand-training.data) que contém os elementos das linhas e sua classe. Dessa forma para primeira parte é guardado em um vetor as classes e são montadas as Features <coluna, elemento> que são guardadas em map<tuple<int,int> para depois ser acessado
 ### Teste 
+Na fase de teste é lido o segundo arquivo [poker-hand-testing.data](dataset/poker-hand-testing.data) que contém novos elementos para classificação. Os elementos são lidos e convertidos em Tuplas <coluna, elemento>, semelhante ao processo de treinamento. A classe real (último elemento da linha) é armazenada separadamente para comparação posterior. 
+O algoritmo LAC é aplicado usando as estruturas de dados criadas na fase de treinamento (map de features e vetor de classes) para classificar a entrada. 
+A classe prevista é comparada com a classe real, e o resultado (acerto ou erro) é registrado. O número da linha e a classe atribuída são escritos no arquivo de saída 'output.txt'.
+O número da linha e a classe atribuída são escritos no arquivo de saída 'output.txt'.
+##  Similaridade Jaccard
+A similaridade de Jaccard é uma medida estatística usada para comparar a semelhança e a diversidade de conjuntos de amostras. Especificamente no contexto deste código.
 
-## Tabela Hash
+Fórmula: J(A,B) = |A ∩ B| / |A ∪ B|
+
+Ele é usado para medir rapidamente quão similares são duas entradas de dados. Se a similaridade é alta (> 0.1 neste caso), o algoritmo assume que as entradas são suficientemente parecidas para pertencer à mesma classe. Permitindo assim, uma classificação rápida sem passar pelo processo completo do LAC, potencialmente economizando tempo de processamento.
 
 ## LAC
 
 ##  Implementação 
-Nessa parte tem-se uma análise mais completa e dedicada a cada função utilizada no trabalho para o seu funcionamento. Assim sendo, explicando seus parâmetros, próposito, funcionamento e tempo gasto previsto. Sendo essas funções [LSH](lsh), [calcularSuporte](calcularsuporte), 
+Nessa parte tem-se uma análise mais completa e dedicada a cada função utilizada no trabalho para o seu funcionamento, explicando seus parâmetros, próposito, funcionamento e tempo gasto previsto, sendo essas funções [LSH](lsh), [calcularSuporte](calcularsuporte), [Classificação](classificação), [Testando](testando) e [Processando](processando).
 ## LSH 
 ```Markdown
 bool lsh(map<double, int>* map_lsh, 
