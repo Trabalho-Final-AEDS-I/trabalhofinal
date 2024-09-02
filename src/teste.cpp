@@ -2,37 +2,34 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <map>
-#include <set>
-#include <vector>
 #include <tuple>
 #include <algorithm>
-#include <unordered_map>
-#include <cassert>
+#include <cmath>
 
 using namespace std;
-int findClasseMaisProxima(const vector<int>& result_combination, 
-                          const vector<vector<int>>& map_classes) {
-    int melhor_indice = -1;
-    long unsigned int max_intersecao = 0;
 
-    for (size_t i = 0; i < map_classes.size(); ++i) {
-        vector<int> intersecao;
-        set_intersection(result_combination.begin(), result_combination.end(),
-                         map_classes[i].begin(), map_classes[i].end(),
-                         back_inserter(intersecao));
+bool lsh(map<double, int>* map_lsh, 
+         vector<tuple<int, int>> a, 
+         vector<tuple<int, int>> b,  
+         int* numero_classe,
+         double* jaccard) {
 
-        // Se a interseção for maior que a interseção máxima encontrada, atualize o índice
-        if (intersecao.size() > max_intersecao) {
-            max_intersecao = intersecao.size();
-            melhor_indice = i;
-        }
+    vector<tuple<int, int>> uniao; 
+    vector<tuple<int, int>> interseccao; 
+
+    set_union(a.begin(), a.end(), b.begin(), b.end(), back_inserter(uniao));
+    set_intersection(a.begin(), a.end(), b.begin(), b.end(), back_inserter(interseccao)); 
+
+    *jaccard = static_cast<double>(interseccao.size()) / uniao.size();
+    *jaccard = std::round(*jaccard * 1000.0) / 1000.0;
+
+    if (0.1 < *jaccard && map_lsh->find(*jaccard) != map_lsh->end()) {
+        *numero_classe = map_lsh->at(*jaccard);
+        return true;
+    } else {
+        return false;
     }
-
-    return melhor_indice;
 }
-
-
 
 void calcularSuporte(
     vector<int>combinacoes, 
@@ -41,104 +38,81 @@ void calcularSuporte(
     map<vector<int>, double> *result
 ) 
 {   
-        //cout<<"combinacoes: "<<v.first.size()<<endl;
         for (const auto& c : classes) {
-           // cout<<"classes: "<<c.size()<<endl;
             vector<int> intersecao;
             
             set_intersection(
                 combinacoes.begin(), combinacoes.end(), 
                 c.begin(), c.end(), 
                 back_inserter(intersecao)
-        );  
+            );  
 
             int confianca = intersecao.size();
             
             if (confianca > 0) {
                 double suporte = confianca / features_size;
-                //cout<<"suporte: "<<suporte<<endl;
 
                 if (result->find(c) == result->end()) {
                     (*result)[c] = 0;
                 }
             (*result)[c] += suporte;
-             //cout<<"resultado: "<<(*result)[c]<<endl;
             }
         }
 }
-
 
 int classificacao(map<tuple<int, int>, vector<int>> features, 
                   vector<vector<int>> map_classes, 
                   map<vector<tuple<int, int>>, vector<int>> *cache, 
                   const int features_size,
-                   vector<tuple<int, int>> lista_elementos
+                  vector<tuple<int, int>> lista_elementos
                   ) {
-    
-    // Lista de elementos, onde cada elemento é um par (feature, valor)
-    //int xxx = features_size;
-    //xxx++;
-    //map_classes.clear();
-    // Variáveis de controle
+
     vector<int> linhas;
     vector<tuple<int, int>> combinacao_atual;
     map<vector<int>, double> result;
 
-    // Total de combinações possíveis (2^n)
+
     int n = lista_elementos.size();
     long unsigned int total_combinacoes = 1 << n;
 
-    // Loop por todas as combinações de features (de 1 a n)
+
     for (long unsigned int i = 1; i < total_combinacoes; ++i) {
         combinacao_atual.clear();
         linhas.clear();
         bool primeiro_elemento = true;
 
-        // Gerar combinação de features atual
         for (int j = 0; j < n; ++j) {
-            if (i & (1 << j)) {  // Verifica se o bit j está setado
+            if (i & (1 << j)) {  
                 combinacao_atual.push_back(lista_elementos[j]);
 
-                auto it = features.find(lista_elementos[j]);  // Procura a feature no mapa
+                auto it = features.find(lista_elementos[j]);  
                 
                 if (it != features.end()) {
-                    if (it->second.empty()) {  // Se a lista de linhas estiver vazia, não há interseção possível
+                    if (it->second.empty()) {  
                         linhas.clear();
-                        break;  // Interrompe o loop para esta combinação
+                        break;  
                     }
 
                     if (primeiro_elemento) {
-                        linhas = it->second;  // Primeira feature, inicializa a lista de linhas
-                        cache->insert({combinacao_atual, linhas});  // Armazena no cache
+                        linhas = it->second;  
+                        cache->insert({combinacao_atual, linhas});  
                         primeiro_elemento = false;
                     } else {
-                        // Verifica se já existe no cache
                         if (cache->find(combinacao_atual) != cache->end()) {
-                            linhas = cache->at(combinacao_atual);  // Usa o cache
+                            linhas = cache->at(combinacao_atual);  
                         } else {
-                            // Calcula a interseção das linhas
+
                             vector<int> temp;
                             set_intersection(linhas.begin(), linhas.end(),
                                              it->second.begin(), it->second.end(),
                                              back_inserter(temp));
                             linhas = temp;
-                            cache->insert({combinacao_atual, linhas});  // Armazena no cache
+                            cache->insert({combinacao_atual, linhas});  
                         }
                     }
                 }
             }
         }
-
-       // cout << "Combinação: ";
-        //for (const auto& p : combinacao_atual) {
-        //    cout << "{" << get<0>(p) << "," << get<1>(p) << "}, ";
-        //}
-        //cout << " -> Linhas: ";
-       // for (const auto& linha : linhas) {
-       //     cout << linha << ", ";
-        //}
-        //cout << endl;
-
 
         if (!linhas.empty()) {
             calcularSuporte(linhas, map_classes, features_size, &result);
@@ -151,26 +125,18 @@ int classificacao(map<tuple<int, int>, vector<int>> features,
       return a.second > b.second;
     });
 
-    if (!result_vector.empty()) {
-        int indice_classe = findClasseMaisProxima(result_vector.front().first, map_classes);
-        if (indice_classe != -1) {
-            return indice_classe;
-        } else {
-            cerr << "Nenhuma classe semelhante encontrada!" << endl;
-            return -1;  // Valor de erro caso não haja resultado
+     if (!result_vector.empty()) {
+            auto it = find(map_classes.begin(), map_classes.end(), result_vector[0].first);
+            int index = distance(map_classes.begin(), it);
+            return index;
+        } 
+    else {
+            return -1; 
         }
-    } else {
-        cerr << "Nenhuma classe encontrada!" << endl;
-        return -1;  // Valor de erro caso não haja resultado
-    }
-
-        //return -1;
     }
 
 
-Teste::Teste(){
-
-}
+Teste::Teste(){}
 
 void Teste::testando(const string &filename_input, const string &filename_output, 
                      vector<vector<int>>* map_classes, 
@@ -189,21 +155,32 @@ void Teste::testando(const string &filename_input, const string &filename_output
     }
 
     string line;
+    map<vector<tuple<int, int>>, vector<int>> cache;
+    map<double, int> map_lsh;
+
+
+    int classe;
     int row = 1;
-    int classe = 0;
     int loss = 0;
     int accuracy = 0;
-    map<vector<tuple<int, int>>, vector<int>> cache;
 
+    // criação da assinatura
+    vector<tuple<int, int>> aux_assinatura;
+
+    for(auto &i: *map_features){
+        aux_assinatura.push_back(i.first);
+    }
+    sort(aux_assinatura.begin(), aux_assinatura.end());
+    vector<tuple<int, int>> assinatura(aux_assinatura.begin(), aux_assinatura.begin() + 10);
+   
     while (getline(file_input, line)) {
         vector<tuple<int, int>> list_line;
         map<tuple<int, int>, vector<int>> features;
-        cout<<"Linha: "<<row<<endl;
 
         stringstream ss(line);
         string valor;
+        int numero_classe;
         int chave = 1;
-        int numero_classe = 0;
 
         while (getline(ss, valor, ',')) {
             if (ss.peek() == EOF) {
@@ -218,17 +195,23 @@ void Teste::testando(const string &filename_input, const string &filename_output
                 features[elemento] = map_features->at(elemento);
             } 
         }
- 
-        numero_classe = classificacao(features, *map_classes, &cache, (*map_features).size(), list_line);
 
-    
+        double jaccard;
+        if(lsh(&map_lsh,assinatura, list_line, &numero_classe,&jaccard)){}
+        else{
+            numero_classe = classificacao(features, *map_classes, &cache, (*map_features).size(), list_line);
+            if(jaccard > 0.1){
+                map_lsh[jaccard] = numero_classe;
+            }
+        }
+
         if (classe == numero_classe) {
             accuracy++;
         } else {
             loss++;
         }
 
-        file_output << "Linha: " << row << " - Classe: " << classe << " - " << numero_classe << endl;
+        file_output << "Linha: " << row << " - Classe: " <<  numero_classe << endl;
 
         if (row == MAX_LINE) {
             break;
