@@ -17,7 +17,7 @@
 
 
 ## Trabalho
-O trabalho consiste em uma 
+Este trabalho foi proposto na disciplina de Algoritmos e Estruturas de Dados pelo professor Michel Pires da Silva do Centro Federal de Educação Tecnológica de Minas Gerais. O presente trabalho propõe a criação de um algoritmo de classificação, utilizando estruturas de dados como listas, filas, pilhas e uma abordagem focada na utilização do algoritmo Lazy Associative Classification (LAC). O objetivo deste trabalho é desenvolver uma solução que seja eficiente e adequada às necessidades de um sistema de classificação em tempo real. 
 ### Treinamento 
 Na fase de treinamento é lido somente o primeiro arquivo [poker-hand-training.data](poker-hand-training.data) que contém os elementos das linhas e sua classe. Dessa forma para primeira parte é guardado em um vetor as classes e são montadas as Tuplas <coluna, elemento> que são guardadas em map<tuple<int,int> para depois ser acessado
 ### Teste 
