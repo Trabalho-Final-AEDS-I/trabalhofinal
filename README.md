@@ -1,10 +1,12 @@
 <h1 align="center">Trabalho AEDS - LAC</h1>
 
-<img align="center" height="20px" width="70px" src="https://img.shields.io/badge/c++-%2300599C.svg?logo=c%2B%2B&logoColor=white"/>
-<img align="center" height="20px" width="80px" src="https://img.shields.io/badge/VS%20Code-blue?logo=visual%20studio%20code"/>
-<img align="center" alt="CMake" src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black" />
+<div align="center">
+    <img align="center" height="20px" width="70px" src="https://img.shields.io/badge/c++-%2300599C.svg?logo=c%2B%2B&logoColor=white"/>
+    <img align="center" height="20px" width="80px" src="https://img.shields.io/badge/VS%20Code-blue?logo=visual%20studio%20code"/>
+    <img align="center" alt="CMake" src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black" />
+</div>
 
-## Índice
+##  Índice :scroll:
 
 * [Trabalho](#trabalho)
   * [Treinamento](#treinamento)
@@ -20,6 +22,7 @@
 * [Conclusão](#conclusão)
 
 
+
 ## Trabalho
 Este trabalho foi proposto na disciplina de Algoritmos e Estruturas de Dados pelo professor Michel Pires da Silva do Centro Federal de Educação Tecnológica de Minas Gerais [GitHub](https://github.com/mpiress). O presente trabalho propõe a criação de um algoritmo de classificação, utilizando estruturas de dados e uma abordagem focada na utilização do algoritmo Lazy Associative Classification (LAC). O objetivo deste trabalho é desenvolver uma solução que seja eficiente e adequada às necessidades de um sistema de classificação em tempo real. Desenvolvendo nossa capacidade de implementação de tabelas hash e 
 ### Treinamento 
@@ -30,7 +33,7 @@ Na fase de treinamento é lido somente o primeiro arquivo [poker-hand-training.d
 
 ## LAC
 
-## :desktop_computer: Implementação 
+##  Implementação 
 Nessa parte tem-se uma análise mais completa e dedicada a cada função utilizada no trabalho para o seu funcionamento. Assim sendo, explicando seus parâmetros, próposito, funcionamento e tempo gasto previsto. Sendo essas funções [LSH](lsh), [calcularSuporte](calcularsuporte), 
 ## LSH 
 ```Markdown
@@ -295,7 +298,7 @@ void Treinamento::processando(const string &filename, vector<vector<int>> *class
 ```
 ## Conclusão 
 
-## :hammer_and_wrench: Compilação
+## Compilação :hammer_and_wrench:
 Para executar o programa foi utilizado um arquivo Makefile que realiza o processo de compilação e execução. Arquivo o qual requer as seguintes diretrizes de execução:
 
 | Comando                |  Função                                                                                               |                     
