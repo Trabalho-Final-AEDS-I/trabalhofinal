@@ -11,7 +11,7 @@
 * [Trabalho](#trabalho)
   * [Treinamento](#treinamento)
   * [Teste](#teste)
-* [Tabela Hash](#tabela-hash)
+* [Similaridade Jaccard](#similaridade-jaccard)
 * [LAC](#lac)
 * [Implementação](#implementação)
   * [LSH](#lsh)
@@ -31,6 +31,15 @@ Na fase de treinamento é lido somente o primeiro arquivo [poker-hand-training.d
 Na fase de teste é lido o segundo arquivo [poker-hand-testing.data](dataset/poker-hand-testing.data) que contém novos elementos para a classificação. Os elementos são lidos e convertidos em Tuplas <coluna, elemento>, semelhantemente ao processo de treinamento. A classe real (último elemento da linha) é armazenada separadamente para comparação posterior. 
 O algoritmo LAC é aplicado usando as estruturas de dados criadas na fase de treinamento (map de features e vetor de classes) para classificar a entrada. 
 A classe prevista é comparada com a classe real, e o resultado (acerto ou erro) é registrado. O número da linha e a classe atribuída são escritos no arquivo de saída 'output.txt'.
+
+<p align="center">
+  <img
+    src="https://cdn.discordapp.com/attachments/1280286232215027817/1280326964837875754/treinamento.png?ex=66d7ace7&is=66d65b67&hm=b918e7d0d3cdce8fea53822d8790aed4588b6fcee4f607fe78d599f355183962&"
+    width="750"
+    height="400"
+    />
+</p>
+
 ##  Similaridade Jaccard
 A similaridade de Jaccard é uma medida estatística usada para comparar a semelhança e a diversidade de conjuntos de amostras.  
 Ele é definido como o tamanho da interseção dos conjuntos dividido pelo tamanho da união dos conjuntos:  
