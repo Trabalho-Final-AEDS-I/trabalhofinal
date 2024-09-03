@@ -72,7 +72,7 @@ O índice de Jaccard retorna um valor entre 0 e 1, onde:
 - **1**: Indica que os conjuntos são idênticos.
 - Um valor entre 0 e 1 indica uma similaridade parcial. Quanto mais próximo de 1, maior a similaridade entre os conjuntos.
 
-Ele é usado para medir rapidamente quão similares são duas entradas de dados. Se a similaridade é alta (maior que 0.1 neste caso), o algoritmo assume que as entradas são suficientemente parecidas para pertencer à mesma classe, o que permite uma classificação rápida sem passar pelo processo completo do LAC, potencialmente economizando tempo de processamento.
+Ele é usado para medir rapidamente quão similares são duas entradas de dados. Se a similaridade for maior que 0.7 no nosso caso, o algoritmo assume que as entradas são suficientemente parecidas para pertencer à mesma classe, o que permite uma classificação rápida sem passar pelo processo completo do LAC, potencialmente economizando tempo de processamento.
 
 
 ## LAC
