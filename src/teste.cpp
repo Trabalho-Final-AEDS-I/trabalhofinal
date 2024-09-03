@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <cmath>
 #include <iomanip> 
+#include <thread>
+#include <mutex>
 
 using namespace std;
 
@@ -136,10 +138,56 @@ int classificacao(map<tuple<int, int>, vector<int>> features,
 
 Teste::Teste(){}
 
+void processarLinha(const string& line, 
+                    const vector<vector<int>>* map_classes, 
+                    map<tuple<int, int>, vector<int>>* map_features, 
+                    map<vector<tuple<int, int>>, vector<int>>* cache,
+                    map<double, int>* map_lsh,
+                    int* accuracy, int* loss, mutex* mtx) {
+
+    vector<tuple<int, int>> list_line;
+    map<tuple<int, int>, vector<int>> features;
+    stringstream ss(line);
+    string valor;
+    int numero_classe;
+    int classe;
+    int chave = 1;
+
+    while (getline(ss, valor, ',')) {
+        if (ss.peek() == EOF) {
+            classe = stoi(valor);
+            break;
+        }
+
+        tuple<int, int> elemento(chave++, stoi(valor));
+        list_line.push_back(elemento);
+
+        if (map_features->find(elemento) != map_features->end()) {
+            features[elemento] = map_features->at(elemento);
+        } 
+    }
+
+    double jaccard;
+    if (lsh(map_lsh, list_line, list_line, &numero_classe, &jaccard)) {}
+    else {
+        numero_classe = classificacao(features, *map_classes, cache, (*map_features).size(), list_line);
+        if (jaccard > 0.7) {
+            lock_guard<mutex> lock(*mtx);
+            (*map_lsh)[jaccard] = numero_classe;
+        }
+    }
+
+    lock_guard<mutex> lock(*mtx);
+    if (classe == numero_classe) {
+        (*accuracy)++;
+    } else {
+        (*loss)++;
+    }
+}
+
 void Teste::testando(const string &filename_input, const string &filename_output, 
                      vector<vector<int>>* map_classes, 
                      map<tuple<int, int>, vector<int>>* map_features) {
-                        
     ifstream file_input(filename_input);
     ofstream file_output(filename_output);
 
@@ -155,71 +203,29 @@ void Teste::testando(const string &filename_input, const string &filename_output
     string line;
     map<vector<tuple<int, int>>, vector<int>> cache;
     map<double, int> map_lsh;
-
-    int classe;
-    int row = 1;
-    int loss = 0;
+    vector<thread> threads;
     int accuracy = 0;
+    int loss = 0;
 
-    // criação da assinatura
-    vector<tuple<int, int>> aux_assinatura;
-
-    for(auto &i: *map_features){
-        aux_assinatura.push_back(i.first);
-    }
-    sort(aux_assinatura.begin(), aux_assinatura.end());
-    vector<tuple<int, int>> assinatura(aux_assinatura.end()-10, aux_assinatura.end());
-   
     while (getline(file_input, line)) {
-        vector<tuple<int, int>> list_line;
-        map<tuple<int, int>, vector<int>> features;
+        threads.emplace_back(processarLinha, line, map_classes, map_features, &cache, &map_lsh, &accuracy, &loss, &mtx);
 
-        stringstream ss(line);
-        string valor;
-        int numero_classe;
-        int chave = 1;
-
-        while (getline(ss, valor, ',')) {
-            if (ss.peek() == EOF) {
-                classe = stoi(valor);
-                break;
+        if (threads.size() >= thread::hardware_concurrency()) {
+            for (auto& th : threads) {
+                th.join();
             }
-
-            tuple<int, int> elemento(chave++, stoi(valor));
-            list_line.push_back(elemento);
-
-            if (map_features->find(elemento) != map_features->end()) {
-                features[elemento] = map_features->at(elemento);
-            } 
+            threads.clear();
         }
-
-        double jaccard;
-        if(lsh(&map_lsh, assinatura, list_line, &numero_classe, &jaccard)){}
-        else {
-            numero_classe = classificacao(features, *map_classes, &cache, (*map_features).size(), list_line);
-            if(jaccard > 0.7) {
-                map_lsh[jaccard] = numero_classe;
-            }
-        }
-
-        if (classe == numero_classe) {
-            accuracy++;
-        } else {
-            loss++;
-        }
-
-        file_output << "Linha: " << row << " - Classe: " <<  numero_classe <<endl;
-
-        if (row == MAX_LINE) {
-            break;
-        }
-        row++;
     }
 
-    double porcentagem =  static_cast<double>(accuracy) / (accuracy+loss);
+    for (auto& th : threads) {
+        th.join();
+    }
+
+    double porcentagem = static_cast<double>(accuracy) / (accuracy + loss);
 
     file_output << "Acertos: " << accuracy << " - Perda: " << loss << endl;
-    file_output << "Acurácia: " << porcentagem*100.00 <<" %"<< endl;
+    file_output << "Acurácia: " << porcentagem * 100.00 << " %" << endl;
 
     file_output.close();
     file_input.close();
