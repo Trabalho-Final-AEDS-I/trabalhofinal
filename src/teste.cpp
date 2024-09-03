@@ -5,6 +5,7 @@
 #include <tuple>
 #include <algorithm>
 #include <cmath>
+#include <iomanip> // Para formatar a saída dos valores de depuração
 
 using namespace std;
 
@@ -23,7 +24,8 @@ bool lsh(map<double, int>* map_lsh,
     *jaccard = static_cast<double>(interseccao.size()) / uniao.size();
     *jaccard = std::round(*jaccard * 1000.0) / 1000.0;
 
-    if (0.1 < *jaccard && map_lsh->find(*jaccard) != map_lsh->end()) {
+
+    if (0.7 < *jaccard && map_lsh->find(*jaccard) != map_lsh->end()) {
         *numero_classe = map_lsh->at(*jaccard);
         return true;
     } else {
@@ -38,26 +40,26 @@ void calcularSuporte(
     map<vector<int>, double> *result
 ) 
 {   
-        for (const auto& c : classes) {
-            vector<int> intersecao;
-            
-            set_intersection(
-                combinacoes.begin(), combinacoes.end(), 
-                c.begin(), c.end(), 
-                back_inserter(intersecao)
-            );  
+    for (const auto& c : classes) {
+        vector<int> intersecao;
 
-            int confianca = intersecao.size();
-            
-            if (confianca > 0) {
-                double suporte = confianca / features_size;
+        set_intersection(
+            combinacoes.begin(), combinacoes.end(), 
+            c.begin(), c.end(), 
+            back_inserter(intersecao)
+        );  
 
-                if (result->find(c) == result->end()) {
-                    (*result)[c] = 0;
-                }
-            (*result)[c] += suporte;
+        int confianca = intersecao.size();
+        
+        if (confianca > 0) {
+            double suporte = static_cast<double>(confianca) / features_size;
+
+            if (result->find(c) == result->end()) {
+                (*result)[c] = 0;
             }
+            (*result)[c] += suporte;
         }
+    }
 }
 
 int classificacao(map<tuple<int, int>, vector<int>> features, 
@@ -71,10 +73,8 @@ int classificacao(map<tuple<int, int>, vector<int>> features,
     vector<tuple<int, int>> combinacao_atual;
     map<vector<int>, double> result;
 
-
     int n = lista_elementos.size();
     long unsigned int total_combinacoes = 1 << n;
-
 
     for (long unsigned int i = 1; i < total_combinacoes; ++i) {
         combinacao_atual.clear();
@@ -122,19 +122,17 @@ int classificacao(map<tuple<int, int>, vector<int>> features,
     // Ordena os resultados e retorna o de maior suporte
     vector<pair<vector<int>, double>> result_vector(result.begin(), result.end());
     sort(result_vector.begin(), result_vector.end(), [](const pair<vector<int>, double>& a, const pair<vector<int>, double>& b) {
-      return a.second > b.second;
+        return a.second > b.second;
     });
 
-     if (!result_vector.empty()) {
-            auto it = find(map_classes.begin(), map_classes.end(), result_vector[0].first);
-            int index = distance(map_classes.begin(), it);
-            return index;
-        } 
-    else {
-            return -1; 
-        }
+    if (!result_vector.empty()) {
+        auto it = find(map_classes.begin(), map_classes.end(), result_vector[0].first);
+        int index = distance(map_classes.begin(), it);
+        return index;
+    } else {
+        return -1; 
     }
-
+}
 
 Teste::Teste(){}
 
@@ -157,7 +155,6 @@ void Teste::testando(const string &filename_input, const string &filename_output
     string line;
     map<vector<tuple<int, int>>, vector<int>> cache;
     map<double, int> map_lsh;
-
 
     int classe;
     int row = 1;
@@ -197,10 +194,10 @@ void Teste::testando(const string &filename_input, const string &filename_output
         }
 
         double jaccard;
-        if(lsh(&map_lsh,assinatura, list_line, &numero_classe,&jaccard)){}
-        else{
+        if(lsh(&map_lsh, assinatura, list_line, &numero_classe, &jaccard)){}
+        else {
             numero_classe = classificacao(features, *map_classes, &cache, (*map_features).size(), list_line);
-            if(jaccard > 0.1){
+            if(jaccard > 0.7) {
                 map_lsh[jaccard] = numero_classe;
             }
         }
