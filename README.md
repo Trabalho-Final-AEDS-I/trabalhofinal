@@ -24,13 +24,15 @@
 
 
 ## Trabalho
-Este trabalho foi proposto na disciplina de Algoritmos e Estruturas de Dados pelo professor Michel Pires da Silva do Centro Federal de Educação Tecnológica de Minas Gerais [GitHub](https://github.com/mpiress). O presente trabalho propõe a criação de um algoritmo de classificação, utilizando estruturas de dados e uma abordagem focada na utilização do algoritmo Lazy Associative Classification (LAC). O objetivo deste trabalho é desenvolver uma solução que seja eficiente e adequada às necessidades de um sistema de classificação em tempo real. Desenvolvendo nossa capacidade de implementação de tabelas hash e 
+Este trabalho foi proposto na disciplina de Algoritmos e Estruturas de Dados pelo professor Michel Pires da Silva([GitHub](https://github.com/mpiress)) do Centro Federal de Educação Tecnológica de Minas Gerais. O presente trabalho propõe a criação de um algoritmo de classificação, utilizando estruturas de dados e uma abordagem focada na utilização do algoritmo Lazy Associative Classification (LAC). O objetivo deste trabalho é desenvolver uma solução que seja eficiente e adequada às necessidades de um sistema de classificação. Desenvolvendo nossa capacidade de implementação de tabela hash para uma execução mais rápida e de construção de métodos para uma acurácia melhor. Sendo dividido em duas partes que se complementam [Treinamento](#treinamento) e [Teste](#teste)
+
 ### Treinamento 
-Na fase de treinamento é lido somente o primeiro arquivo [poker-hand-training.data](dataset/poker-hand-training.data) que contém os elementos das linhas e sua classe. Dessa forma, para primeira parte, é guardado em um vetor as classes e são montadas as Features <coluna, elemento> que são guardadas em map<tuple<int,int> para depois ser acessado.
-### Teste 
-Na fase de teste é lido o segundo arquivo [poker-hand-testing.data](dataset/poker-hand-testing.data) que contém novos elementos para a classificação. Os elementos são lidos e convertidos em Tuplas <coluna, elemento>, semelhantemente ao processo de treinamento. A classe real (último elemento da linha) é armazenada separadamente para comparação posterior. 
-O algoritmo LAC é aplicado usando as estruturas de dados criadas na fase de treinamento (map de features e vetor de classes) para classificar a entrada. 
-A classe prevista é comparada com a classe real, e o resultado (acerto ou erro) é registrado. O número da linha e a classe atribuída são escritos no arquivo de saída 'output.txt'.
+Na fase de treinamento é lido somente o primeiro arquivo [poker-hand-training.data](dataset/poker-hand-training.data) que contém as linhas que serão transformadas em Features e classes. Dessa forma, o vetor de entrada do treinamento é, primeiramente, adaptado para o formato de Tupla, que consiste em várias Features <coluna, elemento da coluna> e o número da classe<int> da linha no final, para que seja processado posteriormente. 
+
+Após a formação das Tuplas, essas são processadas e adaptadas ao formato de Features para servirem em um modelo <chave, valor>, dentro de uma tabela de Features. Assim cada Feature desta tabela aponta para as linhas em que ela se encontra, uma vez que pode haver Features iguais em linhas diferentes, assim como será mostrado na figura. Após isso, as Features e suas respectivas linhas são guardadas em map <tuple<int,int> para depois ser acessado novamente.
+Nessa parte final, as classes também são processadas, sendo guardadas em um vetor de vetores, associando cada classe às suas respectivas linhas, sendo também um modelo <chave,valor>.
+
+Esse processo é exemplificado na figura abaixo:
 
 <p align="center">
   <img
@@ -39,6 +41,16 @@ A classe prevista é comparada com a classe real, e o resultado (acerto ou erro)
     height="400"
     />
 </p>
+
+### Teste 
+Na fase de teste, o segundo arquivo, [poker-hand-testing.data](dataset/poker-hand-testing.data), é lido para avaliar a eficácia do modelo treinado. Este arquivo contém novas instâncias que precisam ser classificadas, e o processo de teste se inicia pela leitura dessas instâncias. Cada linha do arquivo de teste representa uma entrada que será convertida em Features no formato <coluna, elemento>, da mesma maneira que foi feito durante a fase de treinamento.
+
+Após essa conversão, a última coluna de cada linha, que indica a classe verdadeira da instância, é separada para servir como referência na avaliação da precisão do modelo. O processo de classificação começa com o algoritmo LAC (Lazy Associative Classification) utilizando as estruturas de dados (map de features e vetor de classes) construídas durante o treinamento.
+
+Para cada nova instância, o algoritmo busca correspondências nas features já conhecidas e tenta identificar padrões que permitam prever a classe correta. A classe prevista pelo modelo é então comparada com a classe real da instância. Os resultados dessa comparação são registrados para determinar a precisão do modelo: acertos aumentam a contagem de acurácia, enquanto erros aumentam a contagem de perdas.
+
+Ao final do processo, o número da linha e a classe atribuída pelo modelo são gravados no arquivo de saída output.txt. Este arquivo serve como um log detalhado da fase de teste, permitindo a análise dos resultados.
+
 
 ##  Similaridade Jaccard
 A similaridade de Jaccard é uma medida estatística usada para comparar a semelhança e a diversidade de conjuntos de amostras.  
@@ -54,7 +66,6 @@ Fórmula: J(A,B) = |A ∩ B| / |A ∪ B|
 </p>
 
 ### Interpretação do Índice de Jaccard
-
 O índice de Jaccard retorna um valor entre 0 e 1, onde:
 
 - **0**: Indica que os conjuntos não têm elementos em comum.
@@ -63,10 +74,21 @@ O índice de Jaccard retorna um valor entre 0 e 1, onde:
 
 Ele é usado para medir rapidamente quão similares são duas entradas de dados. Se a similaridade é alta (maior que 0.1 neste caso), o algoritmo assume que as entradas são suficientemente parecidas para pertencer à mesma classe, o que permite uma classificação rápida sem passar pelo processo completo do LAC, potencialmente economizando tempo de processamento.
 
+
 ## LAC
-O LAC (Lazy Associative Classifier) é um algoritmo de classificação que utiliza uma abordagem "preguiçosa" para a classificação. Assim como primeiro passo desse algoritimo é realizada a **Regra de Associação**, que no nosso trabalho é a formação das Features associada com as linhas e a distribuição das classes também associadas com as respectivas linhas. No segundo passo é realizada a **Seleção de Regras Relevantes**, que ocorre quando uma nova instância precisa ser classificada, assim se a Feature for igual a uma que ja consta na tabela ou no caso da classe for igual a uma que ja consta apenas a linha é guardada por meio de uma combinação classe e as Features 
+Lazy Associative Classification (LAC) é uma técnica que realiza a classificação de dados utilizando uma abordagem "preguiçosa". Em vez de construir um modelo de classificação completo durante o treinamento, o LAC simplesmente armazena associações entre características dos dados e suas classes.
+
+Dessa forma na fase de treinamento, o LAC processa um arquivo de dados para criar duas tabelas principais: uma tabela de Features, que associa combinações de coluna e valor a linhas de dados, e uma tabela de classes, que organiza as instâncias conforme suas classes.
+
+Durante a fase de teste, quando uma nova instância é recebida, o LAC compara suas características com a tabela de Features para encontrar linhas associadas. Em seguida, realiza uma análise combinatória das Features para calcular o suporte e a confiança de cada combinação, determinando a classe da nova instância com base no maior suporte.
+
+Para otimizar a performance, foi utilizado técnicas de cache e análise combinatória eficiente, para buscar um bom funcionamento e velocidade mesmo que com grandes volumes de dados.
+
+
 ##  Implementação 
-Nessa parte tem-se uma análise mais completa e dedicada à cada função utilizada no trabalho para o seu funcionamento, explicando seus parâmetros, próposito, funcionamento e tempo gasto previsto, sendo essas funções [LSH](lsh), [calcularSuporte](calcularsuporte), [Classificação](classificação), [Testando](testando) e [Processando](processando).
+Nessa parte tem-se uma análise mais completa e dedicada à cada função utilizada no trabalho para o seu funcionamento, explicando seus parâmetros, próposito, funcionamento e tempo gasto previsto, sendo essas funções [LSH](#lsh), [calcularSuporte](#calcularsuporte), [Classificação](#classificação), [Testando](#testando) e [Processando](#processando).
+
+
 ## LSH 
 ```Markdown
 bool lsh(map<double, int>* map_lsh, 
@@ -245,7 +267,6 @@ Funcionamento:
 - Ordena os resultados pelo suporte e retorna a classe que tem o maior suporte.
 
 
-
 ## Testando 
 ```Markdown
 void Teste::testando(const string &filename_input, const string &filename_output, 
@@ -336,7 +357,6 @@ void Teste::testando(const string &filename_input, const string &filename_output
 }
 ```
 ### Classe Teste e Método testando
-
 Propósito: A classe Teste contém métodos para realizar o teste do modelo de classificação. O método testando processa um arquivo de entrada, classifica cada linha de dados e salva os resultados em um arquivo de saída.
 
 Funcionamento:
@@ -396,7 +416,6 @@ Parâmetros:
 - features: Um ponteiro para um mapa que mapeia tuplas de inteiros (características) para vetores de inteiros. Cada vetor armazena os números das linhas em que a característica aparece.
 
 ### Funcionamento 
-
 1. Abertura do Arquivo:
     - A função tenta abrir o arquivo especificado pelo nome filename usando um objeto ifstream.
     - Se o arquivo não puder ser aberto, uma mensagem de erro é exibida e o programa é encerrado.
@@ -427,7 +446,14 @@ Parâmetros:
 
 
 ## Conclusão 
-No processo de construção do projeto realizado, notou-se que a implementação de uma tabela hash para busca de dados foi primordial para a diminuição do tempo de execução
+Neste trabalho, foi implementado o algoritmo Lazy Associative Classification (LAC)
+
+
+notou-se que a implementação de uma tabela hash para busca de dados foi primordial para a diminuição do tempo de execução.
+
+
+
+
 ## Compilação :hammer_and_wrench:
 Para executar o programa foi utilizado um arquivo Makefile que realiza o processo de compilação e execução. Arquivo o qual requer as seguintes diretrizes de execução:
 
