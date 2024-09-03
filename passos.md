@@ -1,2 +1,0 @@
-pegar a linha é ver se é 70% igual a um elemento no cache hash, se for, pegar as combinações presente 
-                                                     se não, colocar a linha no cache e fazer as combinações

@@ -33,14 +33,21 @@ O algoritmo LAC é aplicado usando as estruturas de dados criadas na fase de tre
 A classe prevista é comparada com a classe real, e o resultado (acerto ou erro) é registrado. O número da linha e a classe atribuída são escritos no arquivo de saída 'output.txt'.
 O número da linha e a classe atribuída são escritos no arquivo de saída 'output.txt'.
 ##  Similaridade Jaccard
-A similaridade de Jaccard é uma medida estatística usada para comparar a semelhança e a diversidade de conjuntos de amostras. Especificamente no contexto deste código.
-
+A similaridade de Jaccard é uma medida estatística usada para comparar a semelhança e a diversidade de conjuntos de amostras.  
+Ele é definido como o tamanho da interseção dos conjuntos dividido pelo tamanho da união dos conjuntos:  
 Fórmula: J(A,B) = |A ∩ B| / |A ∪ B|
+
+<div align="center">
+<img
+  src="![](https://github-production-user-asset-6210df.s3.amazonaws.com/84533708/363804145-b40941a1-577e-4018-bc90-d9568e3f50c8.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20240903%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240903T000219Z&X-Amz-Expires=300&X-Amz-Signature=f125d83ff4f562d153024d55fb7fb112ede130275a0bc60834b5a4d59d475340&X-Amz-SignedHeaders=host&actor_id=84533708&key_id=0&repo_id=834166639)"
+  width="400"
+  height="341" />
+</div>
 
 Ele é usado para medir rapidamente quão similares são duas entradas de dados. Se a similaridade é alta (> 0.1 neste caso), o algoritmo assume que as entradas são suficientemente parecidas para pertencer à mesma classe. Permitindo assim, uma classificação rápida sem passar pelo processo completo do LAC, potencialmente economizando tempo de processamento.
 
 ## LAC
-
+O LAC (Lazy Associative Classifier) é um algoritmo de classificação que utiliza uma abordagem "preguiçosa" para a classificação 
 ##  Implementação 
 Nessa parte tem-se uma análise mais completa e dedicada a cada função utilizada no trabalho para o seu funcionamento, explicando seus parâmetros, próposito, funcionamento e tempo gasto previsto, sendo essas funções [LSH](lsh), [calcularSuporte](calcularsuporte), [Classificação](classificação), [Testando](testando) e [Processando](processando).
 ## LSH 
