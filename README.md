@@ -37,9 +37,11 @@ A similaridade de Jaccard é uma medida estatística usada para comparar a semel
 Ele é definido como o tamanho da interseção dos conjuntos dividido pelo tamanho da união dos conjuntos:  
 Fórmula: J(A,B) = |A ∩ B| / |A ∪ B|
 
+![](https://cdn.discordapp.com/attachments/1280286232215027817/1280318805725413441/laccard.png?ex=66d7a54e&is=66d653ce&hm=4a92006d713ff0ea6006f25e44336f9ef75001be767f79baeb02fe1ef27e9d5b&)
+
 <div align="center">
 <img
-  src="![](https://github-production-user-asset-6210df.s3.amazonaws.com/84533708/363804145-b40941a1-577e-4018-bc90-d9568e3f50c8.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20240903%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240903T000219Z&X-Amz-Expires=300&X-Amz-Signature=f125d83ff4f562d153024d55fb7fb112ede130275a0bc60834b5a4d59d475340&X-Amz-SignedHeaders=host&actor_id=84533708&key_id=0&repo_id=834166639)"
+  src= "![](imagens/laccard.png)"
   width="400"
   height="341" />
 </div>
