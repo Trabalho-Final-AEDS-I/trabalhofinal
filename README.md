@@ -26,32 +26,38 @@
 ## Trabalho
 Este trabalho foi proposto na disciplina de Algoritmos e Estruturas de Dados pelo professor Michel Pires da Silva do Centro Federal de Educação Tecnológica de Minas Gerais [GitHub](https://github.com/mpiress). O presente trabalho propõe a criação de um algoritmo de classificação, utilizando estruturas de dados e uma abordagem focada na utilização do algoritmo Lazy Associative Classification (LAC). O objetivo deste trabalho é desenvolver uma solução que seja eficiente e adequada às necessidades de um sistema de classificação em tempo real. Desenvolvendo nossa capacidade de implementação de tabelas hash e 
 ### Treinamento 
-Na fase de treinamento é lido somente o primeiro arquivo [poker-hand-training.data](dataset/poker-hand-training.data) que contém os elementos das linhas e sua classe. Dessa forma para primeira parte é guardado em um vetor as classes e são montadas as Features <coluna, elemento> que são guardadas em map<tuple<int,int> para depois ser acessado
+Na fase de treinamento é lido somente o primeiro arquivo [poker-hand-training.data](dataset/poker-hand-training.data) que contém os elementos das linhas e sua classe. Dessa forma, para primeira parte, é guardado em um vetor as classes e são montadas as Features <coluna, elemento> que são guardadas em map<tuple<int,int> para depois ser acessado.
 ### Teste 
-Na fase de teste é lido o segundo arquivo [poker-hand-testing.data](dataset/poker-hand-testing.data) que contém novos elementos para classificação. Os elementos são lidos e convertidos em Tuplas <coluna, elemento>, semelhante ao processo de treinamento. A classe real (último elemento da linha) é armazenada separadamente para comparação posterior. 
+Na fase de teste é lido o segundo arquivo [poker-hand-testing.data](dataset/poker-hand-testing.data) que contém novos elementos para a classificação. Os elementos são lidos e convertidos em Tuplas <coluna, elemento>, semelhantemente ao processo de treinamento. A classe real (último elemento da linha) é armazenada separadamente para comparação posterior. 
 O algoritmo LAC é aplicado usando as estruturas de dados criadas na fase de treinamento (map de features e vetor de classes) para classificar a entrada. 
 A classe prevista é comparada com a classe real, e o resultado (acerto ou erro) é registrado. O número da linha e a classe atribuída são escritos no arquivo de saída 'output.txt'.
-O número da linha e a classe atribuída são escritos no arquivo de saída 'output.txt'.
 ##  Similaridade Jaccard
 A similaridade de Jaccard é uma medida estatística usada para comparar a semelhança e a diversidade de conjuntos de amostras.  
 Ele é definido como o tamanho da interseção dos conjuntos dividido pelo tamanho da união dos conjuntos:  
 Fórmula: J(A,B) = |A ∩ B| / |A ∪ B|
 
-![](https://cdn.discordapp.com/attachments/1280286232215027817/1280318805725413441/laccard.png?ex=66d7a54e&is=66d653ce&hm=4a92006d713ff0ea6006f25e44336f9ef75001be767f79baeb02fe1ef27e9d5b&)
+<p align="center">
+  <img
+    src="https://cdn.discordapp.com/attachments/1280286232215027817/1280320235659858081/laccard.png?ex=66d7a6a3&is=66d65523&hm=e73ca72a217c2780229dfd5d479068bdb388f8d239d97da131cf9a9395b3fdb0&"
+    width="750"
+    height="400"
+    />
+</p>
 
-<div align="center">
-<img
-  src= "![](imagens/laccard.png)"
-  width="400"
-  height="341" />
-</div>
+### Interpretação do Índice de Jaccard
 
-Ele é usado para medir rapidamente quão similares são duas entradas de dados. Se a similaridade é alta (> 0.1 neste caso), o algoritmo assume que as entradas são suficientemente parecidas para pertencer à mesma classe. Permitindo assim, uma classificação rápida sem passar pelo processo completo do LAC, potencialmente economizando tempo de processamento.
+O índice de Jaccard retorna um valor entre 0 e 1, onde:
+
+- **0**: Indica que os conjuntos não têm elementos em comum.
+- **1**: Indica que os conjuntos são idênticos.
+- Um valor entre 0 e 1 indica uma similaridade parcial. Quanto mais próximo de 1, maior a similaridade entre os conjuntos.
+
+Ele é usado para medir rapidamente quão similares são duas entradas de dados. Se a similaridade é alta (maior que 0.1 neste caso), o algoritmo assume que as entradas são suficientemente parecidas para pertencer à mesma classe, o que permite uma classificação rápida sem passar pelo processo completo do LAC, potencialmente economizando tempo de processamento.
 
 ## LAC
-O LAC (Lazy Associative Classifier) é um algoritmo de classificação que utiliza uma abordagem "preguiçosa" para a classificação 
+O LAC (Lazy Associative Classifier) é um algoritmo de classificação que utiliza uma abordagem "preguiçosa" para a classificação. Assim como primeiro passo desse algoritimo é realizada a **Regra de Associação**, que no nosso trabalho é a formação das Features associada com as linhas e a distribuição das classes também associadas com as respectivas linhas. No segundo passo é realizada a **Seleção de Regras Relevantes**, que ocorre quando uma nova instância precisa ser classificada, assim se a Feature for igual a uma que ja consta na tabela ou no caso da classe for igual a uma que ja consta apenas a linha é guardada por meio de uma combinação classe e as Features 
 ##  Implementação 
-Nessa parte tem-se uma análise mais completa e dedicada a cada função utilizada no trabalho para o seu funcionamento, explicando seus parâmetros, próposito, funcionamento e tempo gasto previsto, sendo essas funções [LSH](lsh), [calcularSuporte](calcularsuporte), [Classificação](classificação), [Testando](testando) e [Processando](processando).
+Nessa parte tem-se uma análise mais completa e dedicada à cada função utilizada no trabalho para o seu funcionamento, explicando seus parâmetros, próposito, funcionamento e tempo gasto previsto, sendo essas funções [LSH](lsh), [calcularSuporte](calcularsuporte), [Classificação](classificação), [Testando](testando) e [Processando](processando).
 ## LSH 
 ```Markdown
 bool lsh(map<double, int>* map_lsh, 
@@ -80,7 +86,7 @@ bool lsh(map<double, int>* map_lsh,
 Propósito: Essa função verifica se a similaridade de Jaccard entre dois conjuntos é suficiente para associar um determinado item a uma classe conhecida. Se a similaridade for acima de um determinado limiar e a classe correspondente for encontrada em um mapa, a função retorna true e define numero_classe para a classe correspondente.
 
 Parâmetros:
-- map_lsh: Mapa que relaciona a similaridade de Jaccard a classes.
+- map_lsh: Mapa que relaciona a similaridade de Jaccard às classes.
 - a, b: Dois vetores de tuplas representando as características dos elementos que estão sendo comparados.
 - numero_classe: Ponteiro para um inteiro onde será armazenada a classe correspondente, se encontrada.
 - jaccard: Ponteiro para um valor double onde será armazenada a similaridade de Jaccard calculada.
@@ -429,9 +435,9 @@ Para executar o programa foi utilizado um arquivo Makefile que realiza o process
 | Participante           |  Contato  |                     
 | -----------------------| ----------|
 |  Anderson Rodrigues Dos Santos | andersonifnmg.info@gmail.com :email: |
-|  Elcio Costa Amorim Neto | elcioamorim12@gmail.com :email: |
+|  Élcio Costa Amorim Neto | elcioamorim12@gmail.com :email: |
 |  Humberto Henrique Lima Cunha | humberto17henrique@gmail.com  :email: |
-|  Kaua Lucas De Jesus Silva | kaualucas396@gmail.com :email: |
+|  Kauã Lucas De Jesus Silva | kaualucas396@gmail.com :email: |
 |  Sergio Henrique Quedas Ramos | sergiohenriquequedasramos@gmail.com :email: |  
 
 </div>
