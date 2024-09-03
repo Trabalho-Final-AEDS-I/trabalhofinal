@@ -299,7 +299,7 @@ void Teste::testando(const string &filename_input, const string &filename_output
         aux_assinatura.push_back(i.first);
     }
     sort(aux_assinatura.begin(), aux_assinatura.end());
-    vector<tuple<int, int>> assinatura(aux_assinatura.begin(), aux_assinatura.begin() + 10);
+    vector<tuple<int, int>> assinatura(aux_assinatura.end()-10, aux_assinatura.end());
    
     while (getline(file_input, line)) {
         vector<tuple<int, int>> list_line;
@@ -339,7 +339,7 @@ void Teste::testando(const string &filename_input, const string &filename_output
             loss++;
         }
 
-        file_output << "Linha: " << row << " - Classe: " <<  numero_classe << endl;
+        file_output << "Linha: " << row << " - Classe: " <<  numero_classe <<endl;
 
         if (row == MAX_LINE) {
             break;
@@ -347,7 +347,10 @@ void Teste::testando(const string &filename_input, const string &filename_output
         row++;
     }
 
-    file_output << "Acurácia: " << accuracy << " - Perda: " << loss << endl;
+    double porcentagem =  static_cast<double>(accuracy) / (accuracy+loss);
+
+    file_output << "Acertos: " << accuracy << " - Perda: " << loss << endl;
+    file_output << "Acurácia: " << porcentagem*100.00 <<" %"<< endl;
 
     file_output.close();
     file_input.close();

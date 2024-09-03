@@ -3,8 +3,8 @@
 #include <iostream>
 #include <chrono>
 
-string file_input_train = "dataset/poker-hand-training.data";
-string file_input_test = "dataset/poker-hand-testing.data";
+string file_input_train = "base-avaliacao/poker-hand-training.data";
+string file_input_test = "base-avaliacao/poker-hand-testing.data";
 string file_output = "dataset/output.txt";
 
 int main() {

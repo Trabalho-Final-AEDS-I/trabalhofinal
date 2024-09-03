@@ -6,7 +6,7 @@
 #include <map>
 #include <tuple>
 
-#define MAX_LINE 500
+#define MAX_LINE 100000
 
 using namespace std;
 
