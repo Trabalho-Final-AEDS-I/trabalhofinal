@@ -80,7 +80,7 @@ Lazy Associative Classification (LAC) é uma técnica que realiza a classificaç
 
 Dessa forma na fase de treinamento, o LAC processa um arquivo de dados para criar duas tabelas principais: uma tabela de Features, que associa combinações de coluna e valor a linhas de dados, e uma tabela de classes, que organiza as instâncias conforme suas classes.
 
-Durante a fase de teste, quando uma nova instância é recebida, o LAC compara suas características com a tabela de Features para encontrar linhas associadas. Em seguida, realiza uma análise combinatória das Features para calcular o suporte e a confiança de cada combinação, determinando a classe da nova instância com base no maior suporte.
+Durante a fase de teste, quando uma nova instância é recebida, o LAC compara suas características com a tabela de Features para encontrar linhas associadas. Em seguida, realiza uma análise combinatória das Features para calcular o suporte e a confiança de cada combinação, determinando a classe da nova instância com base no maior suporte. Fazendo esse processo linha por linha.
 
 Para otimizar a performance, foi utilizado técnicas de cache e análise combinatória eficiente, para buscar um bom funcionamento e velocidade mesmo que com grandes volumes de dados.
 
