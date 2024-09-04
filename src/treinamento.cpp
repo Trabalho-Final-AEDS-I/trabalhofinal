@@ -41,3 +41,10 @@ void Treinamento::processando(const string &filename, vector<vector<int>> *class
 
     file.close();
 }
+
+
+
+
+
+
+

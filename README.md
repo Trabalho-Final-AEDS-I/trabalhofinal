@@ -24,7 +24,7 @@
 
 
 ## Trabalho
-Este trabalho foi proposto na disciplina de Algoritmos e Estruturas de Dados pelo professor Michel Pires da Silva([GitHub](https://github.com/mpiress)) do Centro Federal de Educação Tecnológica de Minas Gerais. A atividade propõe a criação de um algoritmo de classificação utilizando estruturas de dados e uma abordagem focada na utilização do algoritmo Lazy Associative Classification (LAC). O objetivo é desenvolver uma solução que seja eficiente e adequada às necessidades de um sistema de classificação, desenvolvendo nossa capacidade de implementação de tabela hash para uma execução mais rápida e de construção de métodos para uma acurácia melhor. Nesse sentido, este trabalho é dividido em duas partes que se complementam: [Treinamento](#treinamento) e [Teste](#teste)
+Este trabalho foi proposto na disciplina de Algoritmos e Estruturas de Dados pelo professor Michel Pires da Silva([GitHub](https://github.com/mpiress)) do Centro Federal de Educação Tecnológica de Minas Gerais. O presente trabalho propõe a criação de um algoritmo de classificação, utilizando estruturas de dados e uma abordagem focada na utilização do algoritmo Lazy Associative Classification (LAC). O objetivo deste trabalho é desenvolver uma solução que seja eficiente e adequada às necessidades de um sistema de classificação. Desenvolvendo nossa capacidade de implementação de tabela hash para uma execução mais rápida e de construção de métodos para uma acurácia melhor. Sendo dividido em duas partes que se complementam [Treinamento](#treinamento) e [Teste](#teste)
 
 ### Treinamento 
 Na fase de treinamento é lido somente o primeiro arquivo [poker-hand-training.data](dataset/poker-hand-training.data) que contém as linhas que serão transformadas em Features e classes. Dessa forma, o vetor de entrada do treinamento é, primeiramente, adaptado para o formato de Tupla, que consiste em várias Features <coluna, elemento da coluna> e o número da classe<int> da linha no final, para que seja processado posteriormente. 
@@ -86,10 +86,12 @@ Para otimizar a performance, foi utilizado técnicas de cache e análise combina
 
 
 ##  Implementação 
+
 Nessa parte tem-se uma análise mais completa e dedicada à cada função utilizada no trabalho para o seu funcionamento, explicando seus parâmetros, próposito, funcionamento e tempo gasto previsto, sendo essas funções [LSH](#lsh), [calcularSuporte](#calcularsuporte), [Classificação](#classificação), [Testando](#testando) e [Processando](#processando).
 
+## Classe Teste
 
-## LSH 
+### LSH 
 ```Markdown
 bool lsh(map<double, int>* map_lsh, 
          vector<tuple<int, int>> a, 
@@ -115,7 +117,7 @@ bool lsh(map<double, int>* map_lsh,
     }
 }
 ```
-Propósito: Essa função verifica se a similaridade de Jaccard entre dois conjuntos é suficiente para associar um determinado item a uma classe conhecida. Se a similaridade for acima de um determinado limiar e a classe correspondente for encontrada em um mapa, a função retorna true e define numero_classe para a classe correspondente.
+Propósito: Essa função utiliza a similaridade de Jaccard para verificar se um item pode ser associado a uma classe conhecida, retornando true e definindo numero_classe quando a similaridade excede um certo limiar e a classe correspondente está registrada em um mapa. O objetivo é filtrar dados e otimizar o tempo de execução, comparando cada nova linha com linhas previamente armazenadas. Se for encontrada uma similaridade de 70% ou mais, a classe previamente processada é aplicada à nova linha.
 
 Parâmetros:
 - map_lsh: Mapa que relaciona a similaridade de Jaccard às classes.
@@ -129,7 +131,7 @@ Funcionamento:
 - Se a similaridade for maior que 0,1 e a similaridade existir no map_lsh, a função atribui numero_classe com a classe correspondente e retorna true.
 
 
-## CalcularSuporte 
+### CalcularSuporte 
 ```Markdown
 void calcularSuporte(
     vector<int>combinacoes, 
@@ -163,7 +165,7 @@ void calcularSuporte(
 Propósito: Essa função calcula o suporte de um conjunto de combinações de elementos, comparando-o com classes existentes.
 
 Parâmetros:
-- combinacoes: Vetor de inteiros representando combinações de elementos.
+- combinações: Vetor de inteiros representando combinações de elementos.
 - classes: Vetor de vetores de inteiros que representam as classes.
 - features_size: Tamanho das características.
 - result: Mapa onde os resultados dos cálculos de suporte são armazenados.
@@ -173,7 +175,7 @@ Funcionamento:
 - Se a interseção não for vazia, calcula o suporte (a confiança) e adiciona ao resultado.
 
 
-## Classificação 
+### Classificação 
 ```Markdown
 int classificacao(map<tuple<int, int>, vector<int>> features, 
                   vector<vector<int>> map_classes, 
@@ -247,7 +249,7 @@ int classificacao(map<tuple<int, int>, vector<int>> features,
     }
 }
 ```
-Propósito: Essa função realiza a classificação de um conjunto de características com base nas interseções dessas características com um conjunto de classes conhecidas. O objetivo é encontrar a classe que melhor corresponde às características dadas.
+Propósito: Esta função classifica um conjunto de características com base nas interseções dessas características com um conjunto de classes conhecidas (cache). O objetivo é identificar a classe que melhor corresponde às características fornecidas. O conjunto de características é formado por todas as combinações possíveis dos dados de entrada, e para cada combinação, calcula-se o suporte, de modo que, ao final, a classe da linha possa ser suposta.
 
 Parâmetros:
 
@@ -265,7 +267,7 @@ Funcionamento:
 - Ordena os resultados pelo suporte e retorna a classe que tem o maior suporte.
 
 
-## Testando 
+### Testando 
 ```Markdown
 void Teste::testando(const string &filename_input, const string &filename_output, 
                      vector<vector<int>>* map_classes, 
@@ -355,22 +357,57 @@ void Teste::testando(const string &filename_input, const string &filename_output
     file_output.close();
     file_input.close();
 }
+
 ```
-### Classe Teste e Método testando
-Propósito: A classe Teste contém métodos para realizar o teste do modelo de classificação. O método testando processa um arquivo de entrada, classifica cada linha de dados e salva os resultados em um arquivo de saída.
+Propósito: A função testando realiza a classificação de um conjunto de dados com base em características extraídas de um arquivo de entrada. Ela compara as características de cada linha com uma assinatura predefinida e calcula a acurácia do processo de classificação, salvando os resultados em um arquivo de saída. Além disso, a função utiliza técnicas de hashing para otimizar a busca por interseções e classificações.
+
+Parâmetros:
+- const string &filename_input: Nome do arquivo de entrada contendo os dados a serem classificados.
+- const string &filename_output: Nome do arquivo de saída onde os resultados da classificação serão gravados.
+- vector<vector<int>>* map_classes: Ponteiro para um vetor de vetores, onde cada vetor representa uma classe e contém os identificadores das características associadas a essa classe.
+- map<tuple<int, int>, vector<int>>* map_features: Ponteiro para um mapa que associa tuplas de características (features) a vetores de inteiros, representando as linhas em que essas características aparecem.
 
 Funcionamento:
+- **Abertura dos Arquivos:**
+  - Abre o arquivo de entrada (`file_input`) e o arquivo de saída (`file_output`). Se a abertura falhar, imprime uma mensagem de erro e encerra o programa.
 
-- Leitura de Arquivos: Abre o arquivo de entrada (filename_input) e cria o arquivo de saída (filename_output).
-- Inicialização: Cria uma assinatura baseada nas características fornecidas.
-- Para cada linha do arquivo de entrada, extrai as características e a classe real.
-- Calcula a similaridade de Jaccard usando a função lsh para determinar se a classe pode ser identificada com base nessa métrica.
-- Se não puder ser identificada com lsh, a função classificacao é chamada para determinar a classe usando o método de combinação de interseções.
-- Calcula a acurácia e a perda comparando a classe prevista com a classe real.
-- Escreve os resultados no arquivo de saída.
+- **Inicialização:**
+  - Cria um `map` chamado `cache` para armazenar combinações de características e suas interseções, otimizando futuras consultas.
+  - Cria um `map` chamado `map_lsh` para armazenar o valor do coeficiente de Jaccard e a classe correspondente, otimizando a busca.
+
+- **Criação da Assinatura:**
+  - Preenche `aux_assinatura` com todas as tuplas de características do `map_features`.
+  - Ordena `aux_assinatura` e seleciona as últimas 10 tuplas para formar a `assinatura`.
+
+- **Processamento das Linhas do Arquivo:**
+  - Lê cada linha do arquivo de entrada.
+  - Para cada linha, divide o conteúdo em valores, mapeando cada valor para uma tupla e coletando as características e suas linhas correspondentes.
+  - Verifica se a característica está presente em `map_features` e atualiza o mapa `features`.
+
+- **Classificação e Cálculo de Similaridade:**
+  - Calcula o coeficiente de Jaccard para a assinatura e a linha atual usando a função `lsh`. Se a similaridade é baixa, chama a função `classificacao` para determinar a classe com base no suporte das características.
+  - Se o coeficiente de Jaccard for maior que 0.7, o valor é adicionado ao `map_lsh` para otimizar consultas futuras.
+
+- **Avaliação da Classificação:**
+  - Compara a classe prevista (`numero_classe`) com a classe real (`classe`).
+  - Atualiza os contadores de acertos (`accuracy`) e perdas (`loss`).
+
+- **Gravação dos Resultados:**
+  - Escreve o resultado de cada linha no arquivo de saída.
+  - Calcula e escreve a acurácia final e o número total de acertos e perdas no arquivo de saída.
+
+- **Fechamento dos Arquivos:**
+  - Fecha os arquivos de entrada e saída.
+
+#### Observações
+- **Assinatura:** A assinatura é formada pelas últimas 10 tuplas de características ordenadas. Esse método assume que as características mais relevantes estão no final da lista após a ordenação.
+- **Hashing Local Sensível (LSH):** O `map_lsh` é usado para armazenar o coeficiente de Jaccard e a classe associada, evitando recalcular a similaridade para as mesmas assinaturas em futuras iterações.
+- **Classificação:** Se a similaridade não for suficientemente alta, a função de classificação é utilizada para determinar a classe com base no suporte das características.
 
 
-## Processando 
+## Classe Treinamento 
+
+### Processando 
 ```Markdown
 void Treinamento::processando(const string &filename, vector<vector<int>> *classes, map<tuple<int,int>,vector<int>> *features){
 
@@ -408,14 +445,14 @@ void Treinamento::processando(const string &filename, vector<vector<int>> *class
     file.close();
 }
 ```
-A função *Treinamento::processando* é responsável por processar um arquivo de entrada que contém dados para o treinamento de um modelo. Ela lê os dados do arquivo, organiza-os em classes e características, e os armazena em estruturas apropriadas para serem usados posteriormente no treinamento ou em previsões.
+A função Treinamento::processando é responsável por processar um arquivo de entrada que contém dados para o treinamento de um modelo. Ela lê os dados do arquivo, organiza-os em classes e características, e os armazena em estruturas apropriadas para serem usados posteriormente no teste.
 
 Parâmetros:
 - filename: O nome do arquivo que contém os dados de entrada para o treinamento.
 - classes: Um ponteiro para um vetor de vetores de inteiros. Cada vetor interno representa uma classe e armazena os números das linhas que pertencem a essa classe.
 - features: Um ponteiro para um mapa que mapeia tuplas de inteiros (características) para vetores de inteiros. Cada vetor armazena os números das linhas em que a característica aparece.
 
-### Funcionamento 
+ Funcionamento:
 1. Abertura do Arquivo:
     - A função tenta abrir o arquivo especificado pelo nome filename usando um objeto ifstream.
     - Se o arquivo não puder ser aberto, uma mensagem de erro é exibida e o programa é encerrado.
@@ -454,7 +491,7 @@ notou-se que a implementação de uma tabela hash para busca de dados foi primor
 
 
 
-## Compilação :hammer_and_wrench:
+## Compilação
 Para executar o programa foi utilizado um arquivo Makefile que realiza o processo de compilação e execução. Arquivo o qual requer as seguintes diretrizes de execução:
 
 | Comando                |  Função                                                                                               |                     

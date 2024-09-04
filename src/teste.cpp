@@ -6,15 +6,8 @@
 #include <algorithm>
 #include <cmath>
 #include <iomanip> 
-#include <thread>
-#include <vector>
-#include <mutex>
-#include <map>
-#include <set>
 
 using namespace std;
-
-mutex mtx; // Mutex para sincronização de acesso ao resultado
 
 bool lsh(map<double, int>* map_lsh, 
          vector<tuple<int, int>> a, 
@@ -31,9 +24,9 @@ bool lsh(map<double, int>* map_lsh,
     *jaccard = static_cast<double>(interseccao.size()) / uniao.size();
     *jaccard = std::round(*jaccard * 1000.0) / 1000.0;
 
-    auto it = map_lsh->find(*jaccard);
-    if (it != map_lsh->end()) {
-        *numero_classe = it->second;
+
+    if (0.7 < *jaccard && map_lsh->find(*jaccard) != map_lsh->end()) {
+        *numero_classe = map_lsh->at(*jaccard);
         return true;
     } else {
         return false;
@@ -41,7 +34,7 @@ bool lsh(map<double, int>* map_lsh,
 }
 
 void calcularSuporte(
-    vector<int> combinacoes, 
+    vector<int>combinacoes, 
     const vector<vector<int>>& classes, 
     const int features_size,
     map<vector<int>, double> *result
@@ -61,7 +54,6 @@ void calcularSuporte(
         if (confianca > 0) {
             double suporte = static_cast<double>(confianca) / features_size;
 
-            lock_guard<mutex> lock(mtx); // Lock para garantir acesso seguro ao result
             if (result->find(c) == result->end()) {
                 (*result)[c] = 0;
             }
@@ -70,22 +62,26 @@ void calcularSuporte(
     }
 }
 
-void processarCombinacoes(long unsigned int inicio, long unsigned int fim,
-                           map<tuple<int, int>, vector<int>> features, 
-                           vector<vector<int>> map_classes,
-                           map<vector<tuple<int, int>>, vector<int>> *cache,
-                           const int features_size,
-                           vector<tuple<int, int>> lista_elementos,
-                           map<vector<int>, double> *result) {
+int classificacao(map<tuple<int, int>, vector<int>> features, 
+                  vector<vector<int>> map_classes, 
+                  map<vector<tuple<int, int>>, vector<int>> *cache, 
+                  const int features_size,
+                  vector<tuple<int, int>> lista_elementos
+                  ) {
+
     vector<int> linhas;
     vector<tuple<int, int>> combinacao_atual;
+    map<vector<int>, double> result;
 
-    for (long unsigned int i = inicio; i < fim; ++i) {
+    int n = lista_elementos.size();
+    long unsigned int total_combinacoes = 1 << n;
+
+    for (long unsigned int i = 1; i < total_combinacoes; ++i) {
         combinacao_atual.clear();
         linhas.clear();
         bool primeiro_elemento = true;
 
-        for (long unsigned int j = 0; j < lista_elementos.size(); ++j) {
+        for (int j = 0; j < n; ++j) {
             if (i & (1 << j)) {  
                 combinacao_atual.push_back(lista_elementos[j]);
 
@@ -102,10 +98,10 @@ void processarCombinacoes(long unsigned int inicio, long unsigned int fim,
                         cache->insert({combinacao_atual, linhas});  
                         primeiro_elemento = false;
                     } else {
-                        auto it_cache = cache->find(combinacao_atual);
-                        if (it_cache != cache->end()) {
-                            linhas = it_cache->second;  
+                        if (cache->find(combinacao_atual) != cache->end()) {
+                            linhas = cache->at(combinacao_atual);  
                         } else {
+
                             vector<int> temp;
                             set_intersection(linhas.begin(), linhas.end(),
                                              it->second.begin(), it->second.end(),
@@ -119,36 +115,8 @@ void processarCombinacoes(long unsigned int inicio, long unsigned int fim,
         }
 
         if (!linhas.empty()) {
-            calcularSuporte(linhas, map_classes, features_size, result);
+            calcularSuporte(linhas, map_classes, features_size, &result);
         }
-    }
-}
-
-
-
-
-int classificacao(map<tuple<int, int>, vector<int>> features, 
-                  vector<vector<int>> map_classes, 
-                  map<vector<tuple<int, int>>, vector<int>> *cache, 
-                  const int features_size,
-                  vector<tuple<int, int>> lista_elementos) {
-
-    vector<thread> threads;
-    map<vector<int>, double> result;
-    long unsigned int n = lista_elementos.size();
-    long unsigned int total_combinacoes = 1 << n;
-    unsigned int num_threads = std::thread::hardware_concurrency(); // Número de threads suportadas
-    long unsigned int chunk_size = total_combinacoes / num_threads;
-
-    for (unsigned int i = 0; i < num_threads; ++i) {
-        long unsigned int inicio = i * chunk_size;
-        long unsigned int fim = (i == num_threads - 1) ? total_combinacoes : (i + 1) * chunk_size;
-
-        threads.emplace_back(processarCombinacoes, inicio, fim, features, map_classes, cache, features_size, lista_elementos, &result);
-    }
-
-    for (auto& t : threads) {
-        t.join();
     }
 
     // Ordena os resultados e retorna o de maior suporte
@@ -193,7 +161,7 @@ void Teste::testando(const string &filename_input, const string &filename_output
     int loss = 0;
     int accuracy = 0;
 
-    // Criação da assinatura
+    // criação da assinatura
     vector<tuple<int, int>> aux_assinatura;
 
     for(auto &i: *map_features){
@@ -248,10 +216,10 @@ void Teste::testando(const string &filename_input, const string &filename_output
         row++;
     }
 
-    double porcentagem =  static_cast<double>(accuracy) / (accuracy + loss);
+    double porcentagem =  static_cast<double>(accuracy) / (accuracy+loss);
 
     file_output << "Acertos: " << accuracy << " - Perda: " << loss << endl;
-    file_output << "Acurácia: " << porcentagem * 100.00 << " %" << endl;
+    file_output << "Acurácia: " << porcentagem*100.00 <<" %"<< endl;
 
     file_output.close();
     file_input.close();
