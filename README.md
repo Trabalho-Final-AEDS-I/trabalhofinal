@@ -260,6 +260,10 @@ int classificacao(map<tuple<int, int>, vector<int>> features,
 ```
 Propósito: Essa função realiza a classificação de um conjunto de características com base nas interseções dessas características com um conjunto de classes conhecidas. O objetivo é encontrar a classe que melhor corresponde às características dadas.
 
+A função faz a combinação das tuples por meio binario, e toda combinação é comparada com cache, se a combinação ja estiver no cache ele ja pega a intersecção ja salvo, que seria as intercecções das linhas, com isso otiminiza o processo de intersecção, uma vez que ele é um processo de alto custo computacional. E com a interceção em mão, ele mede o suporte, que é acomulativo. 
+
+
+
 Parâmetros:
 
 - features: Mapa que mapeia tuplas de características a vetores de inteiros.
