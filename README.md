@@ -482,8 +482,6 @@ A realização deste trabalho foi fundamental para nosso aprendizado, tanto em t
 
 Além disso, o trabalho nos mostrou a importância de otimizar o código para lidar com grandes volumes de dados, garantindo que o algoritmo não só funcione corretamente, mas também dentro de limites de tempo e recursos aceitáveis. Aprendemos que conhecer bem nossos dados de entrada é crucial para tomar decisões informadas durante o desenvolvimento do algoritmo, como na escolha de métodos de cálculo de suporte, no ajuste de limiares de similaridade, e na gestão de memória.
 
-Entretanto apesar das grandes melhorias que nós aplicamos durante o trabalho, uma melhoria muito importante que não foi realizada foi a utilização da biblioteca *thread* a qual disponibiliza mais núcleos para a execução dos processos. Ao tentar utiliza-lá tivemos problemas para manter o código estável, dito isso os resultados de acurácia obtidos variavam a cada execução. Além disso, ao tentar modificar a utilização dos threads apenas para a parte de combinação do código, houve erros de *segmentation fault*. Assim a nossa tentativa de um melhor tempo de execução não foi efetivada.
-
 Portanto, esse projeto destacou a importância da análise cuidadosa dos dados e da necessidade de uma abordagem estratégica para o desenvolvimento de soluções de software eficientes. 
 
 ## Compilação :hammer_and_wrench:
