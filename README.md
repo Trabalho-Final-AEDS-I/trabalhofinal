@@ -380,7 +380,7 @@ void Teste::testando(const string &filename_input, const string &filename_output
 }
 ```
 ### Classe Teste e Método testando
-Propósito: A classe Teste contém métodos para realizar o teste do modelo de classificação. O método testando processa um arquivo de entrada, classifica cada linha de dados e salva os resultados em um arquivo de saída.
+Propósito: A classe Teste contém métodos para realizar o teste do modelo de classificação. O método testando processa um arquivo de entrada, assim preparando as tuplas do arquivo de entrada para serem comparadas. Também na função é realizada as assinaturas que serão utilizadas conforme a opção que for mais víavel. Uma vez que se houver alguma linha com similaridade acima de 0,7 com o dado de entrada é utilizada a função lsh, se não é feita a combinação na função classificação. E depois compara a classe que o algoritmo deduziu que é a certa e compara com a classe real. Assim classifica cada linha de dados e salva os resultados de acertos e perdas em um arquivo de saída.
 
 Funcionamento:
 
