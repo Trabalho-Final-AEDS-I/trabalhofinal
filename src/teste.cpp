@@ -11,6 +11,7 @@
 
 using namespace std;
 
+
 bool lsh(map<double, int>* map_lsh, 
          vector<tuple<int, int>> a, 
          vector<tuple<int, int>> b,  
