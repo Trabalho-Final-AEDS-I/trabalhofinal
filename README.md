@@ -24,7 +24,7 @@
 
 
 ## Trabalho
-Este trabalho foi proposto na disciplina de Algoritmos e Estruturas de Dados pelo professor Michel Pires da Silva([GitHub](https://github.com/mpiress)) do Centro Federal de Educação Tecnológica de Minas Gerais. O presente trabalho propõe a criação de um algoritmo de classificação, utilizando estruturas de dados e uma abordagem focada na utilização do algoritmo Lazy Associative Classification (LAC). O objetivo deste trabalho é desenvolver uma solução que seja eficiente e adequada às necessidades de um sistema de classificação. Desenvolvendo nossa capacidade de implementação de tabela hash para uma execução mais rápida e de construção de métodos para uma acurácia melhor. Sendo dividido em duas partes que se complementam [Treinamento](#treinamento) e [Teste](#teste)
+Este trabalho foi proposto na disciplina de Algoritmos e Estruturas de Dados pelo professor Michel Pires da Silva([GitHub](https://github.com/mpiress)) do Centro Federal de Educação Tecnológica de Minas Gerais. A atividade propõe a criação de um algoritmo de classificação utilizando estruturas de dados e uma abordagem focada na utilização do algoritmo Lazy Associative Classification (LAC). O objetivo é desenvolver uma solução que seja eficiente e adequada às necessidades de um sistema de classificação, desenvolvendo nossa capacidade de implementação de tabela hash para uma execução mais rápida e de construção de métodos para uma acurácia melhor. Nesse sentido, este trabalho é dividido em duas partes que se complementam: [Treinamento](#treinamento) e [Teste](#teste)
 
 ### Treinamento 
 Na fase de treinamento é lido somente o primeiro arquivo [poker-hand-training.data](dataset/poker-hand-training.data) que contém as linhas que serão transformadas em Features e classes. Dessa forma, o vetor de entrada do treinamento é, primeiramente, adaptado para o formato de Tupla, que consiste em várias Features <coluna, elemento da coluna> e o número da classe<int> da linha no final, para que seja processado posteriormente. 
@@ -86,12 +86,10 @@ Para otimizar a performance, foi utilizado técnicas de cache e análise combina
 
 
 ##  Implementação 
-
 Nessa parte tem-se uma análise mais completa e dedicada à cada função utilizada no trabalho para o seu funcionamento, explicando seus parâmetros, próposito, funcionamento e tempo gasto previsto, sendo essas funções [LSH](#lsh), [calcularSuporte](#calcularsuporte), [Classificação](#classificação), [Testando](#testando) e [Processando](#processando).
 
-## Classe Teste
 
-### LSH 
+## LSH 
 ```Markdown
 bool lsh(map<double, int>* map_lsh, 
          vector<tuple<int, int>> a, 
@@ -117,7 +115,7 @@ bool lsh(map<double, int>* map_lsh,
     }
 }
 ```
-Propósito: Essa função utiliza a similaridade de Jaccard para verificar se um item pode ser associado a uma classe conhecida, retornando true e definindo numero_classe quando a similaridade excede um certo limiar e a classe correspondente está registrada em um mapa. O objetivo é filtrar dados e otimizar o tempo de execução, comparando cada nova linha com linhas previamente armazenadas. Se for encontrada uma similaridade de 70% ou mais, a classe previamente processada é aplicada à nova linha.
+Propósito: Essa função verifica se a similaridade de Jaccard entre dois conjuntos é suficiente para associar um determinado item a uma classe conhecida. Se a similaridade for acima de um determinado limiar e a classe correspondente for encontrada em um mapa, a função retorna true e define numero_classe para a classe correspondente.
 
 Parâmetros:
 - map_lsh: Mapa que relaciona a similaridade de Jaccard às classes.
@@ -130,8 +128,13 @@ Funcionamento:
 - Calcula a similaridade de Jaccard entre a e b.
 - Se a similaridade for maior que 0,1 e a similaridade existir no map_lsh, a função atribui numero_classe com a classe correspondente e retorna true.
 
+Análise da complexidade da função lsh:
+- Operações de União e Interseção: Ambas as operações de união e interseção têm complexidade *𝑂(𝑛log 𝑛)*, onde 𝑛 é o tamanho dos vetores a e b. Isso assume que os vetores a e b estão ordenados. Se não estiverem, a complexidade pode aumentar devido à necessidade de ordená-los primeiro, o que adicionaria um 𝑂(𝑛log 𝑛) adicional para cada vetor.
+- As operações matemáticas são O(1) (constantes).
+- Busca e acesso no mapa: A busca no map tem complexidade 𝑂(log 𝑚), onde 𝑚 é o número de entradas no mapa. Acesso no mapa também é O(log m).
+- Conclusão sobre a estimativa de tempo: A maior parte do tempo de execução será dominada pelas operações de união e interseção, cada uma com complexidade O(nlogn). A busca no mapa tem uma complexidade adicional de O(logm), mas como essa operação não depende do tamanho dos vetores a e b, ela não domina o tempo de execução. Portanto, a estimativa de tempo para a função lsh é O(nlog n)+O(log m), onde n é o tamanho dos vetores a e b, e 𝑚 é o número de entradas no map_lsh.
 
-### CalcularSuporte 
+## CalcularSuporte 
 ```Markdown
 void calcularSuporte(
     vector<int>combinacoes, 
@@ -165,7 +168,7 @@ void calcularSuporte(
 Propósito: Essa função calcula o suporte de um conjunto de combinações de elementos, comparando-o com classes existentes.
 
 Parâmetros:
-- combinações: Vetor de inteiros representando combinações de elementos.
+- combinacoes: Vetor de inteiros representando combinações de elementos.
 - classes: Vetor de vetores de inteiros que representam as classes.
 - features_size: Tamanho das características.
 - result: Mapa onde os resultados dos cálculos de suporte são armazenados.
@@ -174,8 +177,14 @@ Funcionamento:
 - Para cada classe, calcula a interseção entre as combinações e os elementos da classe.
 - Se a interseção não for vazia, calcula o suporte (a confiança) e adiciona ao resultado.
 
+Análise da complexidade da função calcularSuporte:
+- Loop Principal sobre classes: Aqui, a função percorre todos os elementos de classes. Se houver 𝑚 classes, este loop tem complexidade 𝑂(𝑚).
+- Interseção de Conjuntos: Suponha que o tamanho de combinacoes seja n e o tamanho de c seja k. O tempo de execução de set_intersection é O(n+k) no pior caso.
+- O cálculo do suporte e a atualização do mapa têm complexidade constante, O(1).
+- Atualização de result: A verificação se uma chave já existe em result e a atualização do valor correspondente têm complexidade 𝑂(log𝑟), onde 𝑟
+é o número de elementos em result.
 
-### Classificação 
+## Classificação 
 ```Markdown
 int classificacao(map<tuple<int, int>, vector<int>> features, 
                   vector<vector<int>> map_classes, 
@@ -249,7 +258,7 @@ int classificacao(map<tuple<int, int>, vector<int>> features,
     }
 }
 ```
-Propósito: Esta função classifica um conjunto de características com base nas interseções dessas características com um conjunto de classes conhecidas (cache). O objetivo é identificar a classe que melhor corresponde às características fornecidas. O conjunto de características é formado por todas as combinações possíveis dos dados de entrada, e para cada combinação, calcula-se o suporte, de modo que, ao final, a classe da linha possa ser suposta.
+Propósito: Essa função realiza a classificação de um conjunto de características com base nas interseções dessas características com um conjunto de classes conhecidas. O objetivo é encontrar a classe que melhor corresponde às características dadas.
 
 Parâmetros:
 
@@ -266,8 +275,16 @@ Funcionamento:
 - Calcula o suporte de cada combinação e armazena no mapa result.
 - Ordena os resultados pelo suporte e retorna a classe que tem o maior suporte.
 
+Análise da complexidade da função classificacao:
+- Loop sobre as combinações: O número total de iterações é 2^𝑛, onde 𝑛 é o tamanho de lista_elementos. Isso se deve ao fato de que o loop itera por todas as possíveis combinações de elementos em lista_elementos, exceto a combinação vazia.
+- Loop interno para construir combinacao_atual e linhas: Este loop verifica, para cada combinação, quais elementos de lista_elementos devem ser incluídos na combinação atual. Como ele é executado dentro do loop principal, sua complexidade é 𝑂(𝑛×2^𝑛).
+- Operações com o mapa features: A busca em um map tem complexidade 𝑂(log 𝑚), onde 𝑚 é o número de elementos no mapa features.
+- Operação de interseção de conjuntos: O tamanho máximo de linhas e it->second pode ser no máximo n. Portanto, a complexidade de cada operação set_intersection é O(n) no pior caso.
+- Inserção no cache: A inserção em um map tem complexidade 𝑂(log 𝑝), onde 𝑝 é o número de elementos no cache.
+- Ordenação dos resultados: A ordenação tem complexidade 𝑂(𝑟log 𝑟), onde 𝑟 é o número de elementos em result_vector. No pior caso, 𝑟 pode ser da ordem de 𝑂(2^𝑛).
+- Conclusão sobre a estimativa de tempo: A complexidade é dominada pelo loop sobre todas as combinações possíveis, que é 𝑂(2^𝑛), combinado com as operações internas que incluem buscas, interseções e inserções em mapas, todas com complexidade adicional de 𝑂(𝑛 log 𝑚). Pelo loop sobre todas as combinações possíveis apresentar maior relevância, a complexidade dessa função é 𝑂(2^𝑛).
 
-### Testando 
+## Testando 
 ```Markdown
 void Teste::testando(const string &filename_input, const string &filename_output, 
                      vector<vector<int>>* map_classes, 
@@ -357,57 +374,29 @@ void Teste::testando(const string &filename_input, const string &filename_output
     file_output.close();
     file_input.close();
 }
-
 ```
-Propósito: A função testando realiza a classificação de um conjunto de dados com base em características extraídas de um arquivo de entrada. Ela compara as características de cada linha com uma assinatura predefinida e calcula a acurácia do processo de classificação, salvando os resultados em um arquivo de saída. Além disso, a função utiliza técnicas de hashing para otimizar a busca por interseções e classificações.
-
-Parâmetros:
-- const string &filename_input: Nome do arquivo de entrada contendo os dados a serem classificados.
-- const string &filename_output: Nome do arquivo de saída onde os resultados da classificação serão gravados.
-- vector<vector<int>>* map_classes: Ponteiro para um vetor de vetores, onde cada vetor representa uma classe e contém os identificadores das características associadas a essa classe.
-- map<tuple<int, int>, vector<int>>* map_features: Ponteiro para um mapa que associa tuplas de características (features) a vetores de inteiros, representando as linhas em que essas características aparecem.
+### Classe Teste e Método testando
+Propósito: A classe Teste contém métodos para realizar o teste do modelo de classificação. O método testando processa um arquivo de entrada, classifica cada linha de dados e salva os resultados em um arquivo de saída.
 
 Funcionamento:
-- **Abertura dos Arquivos:**
-  - Abre o arquivo de entrada (`file_input`) e o arquivo de saída (`file_output`). Se a abertura falhar, imprime uma mensagem de erro e encerra o programa.
 
-- **Inicialização:**
-  - Cria um `map` chamado `cache` para armazenar combinações de características e suas interseções, otimizando futuras consultas.
-  - Cria um `map` chamado `map_lsh` para armazenar o valor do coeficiente de Jaccard e a classe correspondente, otimizando a busca.
+- Leitura de Arquivos: Abre o arquivo de entrada (filename_input) e cria o arquivo de saída (filename_output).
+- Inicialização: Cria uma assinatura baseada nas características fornecidas.
+- Para cada linha do arquivo de entrada, extrai as características e a classe real.
+- Calcula a similaridade de Jaccard usando a função lsh para determinar se a classe pode ser identificada com base nessa métrica.
+- Se não puder ser identificada com lsh, a função classificacao é chamada para determinar a classe usando o método de combinação de interseções.
+- Calcula a acurácia e a perda comparando a classe prevista com a classe real.
+- Escreve os resultados no arquivo de saída.
 
-- **Criação da Assinatura:**
-  - Preenche `aux_assinatura` com todas as tuplas de características do `map_features`.
-  - Ordena `aux_assinatura` e seleciona as últimas 10 tuplas para formar a `assinatura`.
-
-- **Processamento das Linhas do Arquivo:**
-  - Lê cada linha do arquivo de entrada.
-  - Para cada linha, divide o conteúdo em valores, mapeando cada valor para uma tupla e coletando as características e suas linhas correspondentes.
-  - Verifica se a característica está presente em `map_features` e atualiza o mapa `features`.
-
-- **Classificação e Cálculo de Similaridade:**
-  - Calcula o coeficiente de Jaccard para a assinatura e a linha atual usando a função `lsh`. Se a similaridade é baixa, chama a função `classificacao` para determinar a classe com base no suporte das características.
-  - Se o coeficiente de Jaccard for maior que 0.7, o valor é adicionado ao `map_lsh` para otimizar consultas futuras.
-
-- **Avaliação da Classificação:**
-  - Compara a classe prevista (`numero_classe`) com a classe real (`classe`).
-  - Atualiza os contadores de acertos (`accuracy`) e perdas (`loss`).
-
-- **Gravação dos Resultados:**
-  - Escreve o resultado de cada linha no arquivo de saída.
-  - Calcula e escreve a acurácia final e o número total de acertos e perdas no arquivo de saída.
-
-- **Fechamento dos Arquivos:**
-  - Fecha os arquivos de entrada e saída.
-
-#### Observações
-- **Assinatura:** A assinatura é formada pelas últimas 10 tuplas de características ordenadas. Esse método assume que as características mais relevantes estão no final da lista após a ordenação.
-- **Hashing Local Sensível (LSH):** O `map_lsh` é usado para armazenar o coeficiente de Jaccard e a classe associada, evitando recalcular a similaridade para as mesmas assinaturas em futuras iterações.
-- **Classificação:** Se a similaridade não for suficientemente alta, a função de classificação é utilizada para determinar a classe com base no suporte das características.
+Análise da complexidade da função Teste::testando:
+- Leitura do Arquivo e Criação da Assinatura:O loop while (getline(file_input, line)) itera sobre cada linha do arquivo de entrada. Se há L linhas no arquivo, a complexidade é O(L).
+- Função lsh: Sua complexidade foi fornecida anteriormente.
+- Função classificação: Sua complexidade foi fornecida anteriormente.
+- Escrtita do  Arquivo de Saída: Tem complexidade O(1) para cada linha escrita.
+- Calculo da Acurácia: O cálculo da porcentagem e a escrita no arquivo são operações O(1).
 
 
-## Classe Treinamento 
-
-### Processando 
+## Processando 
 ```Markdown
 void Treinamento::processando(const string &filename, vector<vector<int>> *classes, map<tuple<int,int>,vector<int>> *features){
 
@@ -445,14 +434,14 @@ void Treinamento::processando(const string &filename, vector<vector<int>> *class
     file.close();
 }
 ```
-A função Treinamento::processando é responsável por processar um arquivo de entrada que contém dados para o treinamento de um modelo. Ela lê os dados do arquivo, organiza-os em classes e características, e os armazena em estruturas apropriadas para serem usados posteriormente no teste.
+A função *Treinamento::processando* é responsável por processar um arquivo de entrada que contém dados para o treinamento de um modelo. Ela lê os dados do arquivo, organiza-os em classes e características, e os armazena em estruturas apropriadas para serem usados posteriormente no treinamento ou em previsões.
 
 Parâmetros:
 - filename: O nome do arquivo que contém os dados de entrada para o treinamento.
 - classes: Um ponteiro para um vetor de vetores de inteiros. Cada vetor interno representa uma classe e armazena os números das linhas que pertencem a essa classe.
 - features: Um ponteiro para um mapa que mapeia tuplas de inteiros (características) para vetores de inteiros. Cada vetor armazena os números das linhas em que a característica aparece.
 
- Funcionamento:
+### Funcionamento 
 1. Abertura do Arquivo:
     - A função tenta abrir o arquivo especificado pelo nome filename usando um objeto ifstream.
     - Se o arquivo não puder ser aberto, uma mensagem de erro é exibida e o programa é encerrado.
@@ -481,17 +470,23 @@ Parâmetros:
 6. Fechamento do Arquivo:
     - O arquivo é fechado após o término do processamento.
 
+Análise da complexidade dafunção Treinamento::processando :
+- Abertura do arquivo: é uma operação de tempo constante 𝑂 (1).
+- Leitura Linha por Linha: O loop itera sobre cada linha do arquivo. Se há L linhas no arquivo, a complexidade é O(L).
+- Processamento de cada linha: Se uma linha contém k valores, a complexidade é O(k).
+- Busca e Inserção no mapa: A busca e inserção no mapa features são O(log⁡m), onde m é o número de elementos em features. A inserção no vetor associado a cada tupla é O(1) no caso médio. Portanto, para k valores, o custo total para atualizar features é O(k⋅logm).
+- Fechamento do arquivo: Operação de tempo constante 𝑂(1).
 
 ## Conclusão 
-Neste trabalho, foi implementado o algoritmo Lazy Associative Classification (LAC)
+A realização deste trabalho foi fundamental para nosso aprendizado, tanto em termos teóricos quanto práticos. Desenvolver um algoritmo de classificação, como o Lazy Associative Classifier (LAC), exigiu um profundo entendimento dos dados de entrada e das características que eles apresentam. Compreender a estrutura e a natureza dos dados foi essencial para a criação de regras associativas eficazes e para a implementação de um sistema de classificação que fosse ao mesmo tempo preciso e eficiente.
 
+Além disso, o trabalho nos mostrou a importância de otimizar o código para lidar com grandes volumes de dados, garantindo que o algoritmo não só funcione corretamente, mas também dentro de limites de tempo e recursos aceitáveis. Aprendemos que conhecer bem nossos dados de entrada é crucial para tomar decisões informadas durante o desenvolvimento do algoritmo, como na escolha de métodos de cálculo de suporte, no ajuste de limiares de similaridade, e na gestão de memória.
 
-notou-se que a implementação de uma tabela hash para busca de dados foi primordial para a diminuição do tempo de execução.
+Entretanto apesar das grandes melhorias que nós aplicamos durante o trabalho, uma melhoria muito importante que não foi realizada foi a utilização da biblioteca *thread* a qual disponibiliza mais núcleos para a execução dos processos. Ao tentar utiliza-lá tivemos problemas para manter o código estável, dito isso os resultados de acurácia obtidos variavam a cada execução. Além disso, ao tentar modificar a utilização dos threads apenas para a parte de combinação do código, houve erros de *segmentation fault*. Assim a nossa tentativa de um melhor tempo de execução não foi efetivada.
 
+Portanto, esse projeto destacou a importância da análise cuidadosa dos dados e da necessidade de uma abordagem estratégica para o desenvolvimento de soluções de software eficientes. 
 
-
-
-## Compilação
+## Compilação :hammer_and_wrench:
 Para executar o programa foi utilizado um arquivo Makefile que realiza o processo de compilação e execução. Arquivo o qual requer as seguintes diretrizes de execução:
 
 | Comando                |  Função                                                                                               |                     
@@ -513,5 +508,6 @@ Para executar o programa foi utilizado um arquivo Makefile que realiza o process
 |  Sergio Henrique Quedas Ramos | sergiohenriquequedasramos@gmail.com :email: |  
 
 </div>
+
 
 
