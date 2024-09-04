@@ -409,7 +409,7 @@ void Treinamento::processando(const string &filename, vector<vector<int>> *class
     file.close();
 }
 ```
-A função *Treinamento::processando* é responsável por processar um arquivo de entrada que contém dados para o treinamento de um modelo. Ela lê os dados do arquivo, organiza-os em classes e características, e os armazena em estruturas apropriadas para serem usados posteriormente no treinamento ou em previsões.
+A função *Treinamento::processando* é responsável por processar um arquivo de entrada que contém dados para o treinamento de um modelo. Ela lê os dados do arquivo, organiza-os em classes e características, e os armazena em estruturas apropriadas para serem usados posteriormente no arquivo de teste.
 
 Parâmetros:
 - filename: O nome do arquivo que contém os dados de entrada para o treinamento.
