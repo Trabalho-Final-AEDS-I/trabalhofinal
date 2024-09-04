@@ -126,7 +126,7 @@ Parâmetros:
 Funcionamento:
 - Calcula a união e a interseção dos conjuntos a e b.
 - Calcula a similaridade de Jaccard entre a e b.
-- Se a similaridade for maior que 0,1 e a similaridade existir no map_lsh, a função atribui numero_classe com a classe correspondente e retorna true.
+- Se a similaridade for maior que 0,7 e a similaridade existir no map_lsh, a função atribui numero_classe com a classe correspondente e retorna true.
 
 ## CalcularSuporte 
 ```Markdown
