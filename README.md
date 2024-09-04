@@ -159,7 +159,7 @@ void calcularSuporte(
     }
 }
 ```
-Propósito: Essa função calcula o suporte de um conjunto de combinações de elementos, comparando-o com classes existentes.
+Propósito: Essa função calcula o suporte de um conjunto de combinações de elementos, comparando-o com classes existentes. Para assim, deduzir qual é a classe da linha que está sendo combinada.
 
 Parâmetros:
 - combinacoes: Vetor de inteiros representando combinações de elementos.
