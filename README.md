@@ -85,7 +85,19 @@ Durante a fase de teste, quando uma nova instância é recebida, o LAC compara s
 Para otimizar a performance foi utilizado técnicas de cache, similaridade de Jaccard e análise combinatória eficiente, para buscar um bom funcionamento e velocidade mesmo que com grandes volumes de dados.
 
 
-##  Implementação 
+##  Implementação
+
+<p align="center">
+  <img
+    src="imagens/diagrama.png"
+    width="750"
+    height="400"
+    />
+</p>
+
+
+
+
 Nessa parte tem-se uma análise mais completa e dedicada à cada função utilizada no trabalho para o seu funcionamento, explicando seus parâmetros, próposito e funcionamento, sendo essas funções [LSH](#lsh), [calcularSuporte](#calcularsuporte), [Classificação](#classificação), [Testando](#testando) e [Processando](#processando).
 
 
