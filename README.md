@@ -1,3 +1,10 @@
+<p align="center">
+  <img
+    src="https://github.com/Trabalho-Final-AEDS-I/trabalhofinal/blob/main/imagens/ezgif-4-73e45cda41.gif?raw=true"
+    width="750"
+    height="400"
+    />
+</p>
 <h1 align="center">Trabalho AEDS - LAC</h1>
 
 <div align="center">
