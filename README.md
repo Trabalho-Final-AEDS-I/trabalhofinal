@@ -36,7 +36,7 @@ Esse processo é exemplificado na figura abaixo:
 
 <p align="center">
   <img
-    src="https://cdn.discordapp.com/attachments/1280286232215027817/1280326964837875754/treinamento.png?ex=66d7ace7&is=66d65b67&hm=b918e7d0d3cdce8fea53822d8790aed4588b6fcee4f607fe78d599f355183962&"
+    src="https://cdn.discordapp.com/attachments/1271437807738421325/1281059599784607798/2.png?ex=66da5739&is=66d905b9&hm=d748ef754b6f616d128a40364b1945dcc124b23862e9123e0567bb8da417cf79&"
     width="750"
     height="400"
     />
