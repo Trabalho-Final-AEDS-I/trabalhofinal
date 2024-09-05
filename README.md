@@ -34,7 +34,8 @@
 Este trabalho foi proposto na disciplina de Algoritmos e Estruturas de Dados pelo professor Michel Pires da Silva([GitHub](https://github.com/mpiress)) do Centro Federal de Educação Tecnológica de Minas Gerais. A atividade propõe a criação de um algoritmo de classificação utilizando estruturas de dados e uma abordagem focada na utilização do algoritmo Lazy Associative Classification (LAC). O objetivo é desenvolver uma solução que seja eficiente e adequada às necessidades de um sistema de classificação, desenvolvendo nossa capacidade de implementação de tabela hash para uma execução mais rápida e de construção de métodos para uma acurácia melhor. Nesse sentido, este trabalho é dividido em duas partes que se complementam: [Treinamento](#treinamento) e [Teste](#teste)
 
 ### Treinamento 
-Na fase de treinamento é lido somente o primeiro arquivo [poker-hand-training.data](dataset/poker-hand-training.data) que contém as linhas que serão transformadas em Features e classes. Dessa forma, o vetor de entrada do treinamento é, primeiramente, adaptado para o formato de Tupla, que consiste em várias Features <coluna, elemento da coluna> e o número da classe<int> da linha no final, para que seja processado posteriormente. 
+Na fase de treinamento é lido somente o primeiro arquivo [poker-hand-training.data](dataset/poker-hand-training.data) que contém as linhas que serão transformadas em Features e classes. Dessa forma, o vetor de entrada do treinamento é, primeiramente, adaptado para o formato de Tupla, que consiste em várias Features <coluna, elemento da coluna> e o número da classe<int> da linha no final, para que seja processado posteriormente.
+
 
 Após a formação das Tuplas, essas são processadas e adaptadas ao formato de Features para servirem em um modelo <chave, valor>, dentro de uma tabela de Features. Assim cada Feature desta tabela aponta para as linhas em que ela se encontra, uma vez que pode haver Features iguais em linhas diferentes, assim como será mostrado na figura. Após isso, as Features e suas respectivas linhas são guardadas em map <tuple<int,int> para depois ser acessado novamente.
 Nessa parte final, as classes também são processadas, sendo guardadas em um vetor de vetores, associando cada classe às suas respectivas linhas, sendo também um modelo <chave,valor>.
@@ -48,6 +49,52 @@ Esse processo é exemplificado na figura abaixo:
     height="400"
     />
 </p>
+
+```Markdown
+#include "treinamento.hpp"
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
+
+Treinamento::Treinamento() {}
+
+void Treinamento::processando(const string &filename, vector<vector<int>> *classes, map<tuple<int,int>,vector<int>> *features){
+
+    ifstream file(filename);
+    if(!file){
+        cerr<<"Erro ao abrir o arquivo"<<endl;
+        exit(1);
+    }
+
+    string line;
+    int row = 1;
+    while(getline(file,line)){
+        stringstream ss(line);
+        string valor;
+        int chave = 1;
+        int numero_classe;
+    
+        while(getline(ss, valor, ',')){
+            if (ss.peek() == EOF) {
+                numero_classe = stoi(valor);
+                if (numero_classe >= static_cast<int>(classes->size())) {
+                    classes->resize(numero_classe + 1);
+                }
+
+                (*classes)[numero_classe].push_back(row);
+            }
+            else{
+                tuple<int, int> elemento(chave++, stoi(valor));
+                (*features)[elemento].push_back(row);
+            }
+        }
+        row ++;
+    }
+
+    file.close();
+}
+```
 
 ### Teste 
 Na fase de teste, o segundo arquivo, [poker-hand-testing.data](dataset/poker-hand-testing.data), é lido para avaliar a eficácia do modelo treinado. Este arquivo contém novas instâncias que precisam ser classificadas, e o processo de teste se inicia pela leitura dessas instâncias. Cada linha do arquivo de teste representa uma entrada que será convertida em Features no formato <coluna, elemento>, da mesma maneira que foi feito durante a fase de treinamento.
